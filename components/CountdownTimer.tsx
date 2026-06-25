@@ -13,21 +13,28 @@ interface TimeUnit {
 function FlipNumber({ value, label }: { value: number; label: string }) {
   return (
     <div className="flex flex-col items-center gap-1">
-      <div className="glass-card rounded-2xl px-3 py-3 min-w-[64px] flex items-center justify-center card-shadow">
+      <div
+        className="rounded-2xl px-3 py-3 min-w-[62px] flex items-center justify-center"
+        style={{
+          background: 'rgba(255,255,255,0.15)',
+          backdropFilter: 'blur(8px)',
+          border: '1px solid rgba(255,255,255,0.2)',
+        }}
+      >
         <AnimatePresence mode="popLayout">
           <motion.span
             key={value}
-            initial={{ y: -16, opacity: 0 }}
+            initial={{ y: -14, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 16, opacity: 0 }}
+            exit={{ y: 14, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 400, damping: 30, duration: 0.2 }}
-            className="text-2xl font-bold text-text-dark tabular-nums"
+            className="text-2xl font-semibold text-white tabular-nums font-sans"
           >
             {String(value).padStart(2, '0')}
           </motion.span>
         </AnimatePresence>
       </div>
-      <span className="text-xs font-medium text-text-muted uppercase tracking-wide">
+      <span className="text-[10px] font-medium text-white/50 uppercase tracking-widest font-sans">
         {label}
       </span>
     </div>
@@ -38,8 +45,8 @@ export default function CountdownTimer() {
   const [timeLeft, setTimeLeft] = useState<TimeUnit[]>([
     { value: 0, label: 'Jours' },
     { value: 0, label: 'Heures' },
-    { value: 0, label: 'Minutes' },
-    { value: 0, label: 'Secondes' },
+    { value: 0, label: 'Min' },
+    { value: 0, label: 'Sec' },
   ])
   const [isMounted, setIsMounted] = useState(false)
 
@@ -49,28 +56,15 @@ export default function CountdownTimer() {
     const calculate = () => {
       const now = new Date()
       const diff = TARGET_DATE.getTime() - now.getTime()
-
       if (diff <= 0) {
-        setTimeLeft([
-          { value: 0, label: 'Jours' },
-          { value: 0, label: 'Heures' },
-          { value: 0, label: 'Minutes' },
-          { value: 0, label: 'Secondes' },
-        ])
+        setTimeLeft([{ value: 0, label: 'Jours' }, { value: 0, label: 'Heures' }, { value: 0, label: 'Min' }, { value: 0, label: 'Sec' }])
         return
       }
-
       const days = Math.floor(diff / (1000 * 60 * 60 * 24))
       const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
       const seconds = Math.floor((diff % (1000 * 60)) / 1000)
-
-      setTimeLeft([
-        { value: days, label: 'Jours' },
-        { value: hours, label: 'Heures' },
-        { value: minutes, label: 'Minutes' },
-        { value: seconds, label: 'Secondes' },
-      ])
+      setTimeLeft([{ value: days, label: 'Jours' }, { value: hours, label: 'Heures' }, { value: minutes, label: 'Min' }, { value: seconds, label: 'Sec' }])
     }
 
     calculate()
@@ -81,12 +75,12 @@ export default function CountdownTimer() {
   if (!isMounted) {
     return (
       <div className="flex items-center gap-3 justify-center">
-        {['Jours', 'Heures', 'Minutes', 'Secondes'].map((label) => (
+        {['Jours', 'Heures', 'Min', 'Sec'].map((label) => (
           <div key={label} className="flex flex-col items-center gap-1">
-            <div className="glass-card rounded-2xl px-3 py-3 min-w-[64px] flex items-center justify-center card-shadow">
-              <span className="text-2xl font-bold text-text-dark tabular-nums">00</span>
+            <div className="rounded-2xl px-3 py-3 min-w-[62px] flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.2)' }}>
+              <span className="text-2xl font-semibold text-white tabular-nums font-sans">00</span>
             </div>
-            <span className="text-xs font-medium text-text-muted uppercase tracking-wide">{label}</span>
+            <span className="text-[10px] font-medium text-white/50 uppercase tracking-widest font-sans">{label}</span>
           </div>
         ))}
       </div>
@@ -94,12 +88,12 @@ export default function CountdownTimer() {
   }
 
   return (
-    <div className="flex items-start gap-3 justify-center">
+    <div className="flex items-start gap-2.5 justify-center">
       {timeLeft.map((unit, i) => (
-        <div key={unit.label} className="flex items-start gap-3">
+        <div key={unit.label} className="flex items-start gap-2.5">
           <FlipNumber value={unit.value} label={unit.label} />
           {i < timeLeft.length - 1 && (
-            <span className="text-2xl font-bold text-text-muted mt-2">:</span>
+            <span className="text-xl font-light text-white/40 mt-2.5">:</span>
           )}
         </div>
       ))}

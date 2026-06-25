@@ -1,39 +1,43 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { CalendarCheck, Clapperboard, Headphones, PenLine, Sparkles } from 'lucide-react'
 import CountdownTimer from '@/components/CountdownTimer'
 import FeatureCard from '@/components/FeatureCard'
 import LoadingScreen from '@/components/LoadingScreen'
-import { Sparkles } from 'lucide-react'
 
 const cards = [
   {
-    emoji: '🎉',
+    Icon: CalendarCheck,
     title: 'RSVP',
     subtitle: 'Confirmez votre présence',
     href: '/rsvp',
-    gradient: 'linear-gradient(135deg, #FFE4E8 0%, #F9C6D0 100%)',
+    gradient: 'linear-gradient(135deg, #F2ECE6 0%, #E8D8D0 100%)',
+    iconColor: '#B87A6A',
   },
   {
-    emoji: '🎥',
-    title: 'Laisser une vidéo',
-    subtitle: 'Un message en vidéo pour Maman',
+    Icon: Clapperboard,
+    title: 'Message vidéo',
+    subtitle: 'Un mot en vidéo pour Maman',
     href: '/video',
-    gradient: 'linear-gradient(135deg, #EDE4F9 0%, #D9C6F0 100%)',
+    gradient: 'linear-gradient(135deg, #EAE6F0 0%, #D8D0E8 100%)',
+    iconColor: '#7A6B9A',
   },
   {
-    emoji: '🎵',
+    Icon: Headphones,
     title: 'Playlist',
-    subtitle: 'Ajoutez vos chansons préférées',
+    subtitle: 'Ajoutez vos chansons',
     href: '/playlist',
-    gradient: 'linear-gradient(135deg, #E4F9EE 0%, #C6F0DA 100%)',
+    gradient: 'linear-gradient(135deg, #E6EFEC 0%, #D0E4DD 100%)',
+    iconColor: '#6A9A8A',
   },
   {
-    emoji: '💌',
-    title: 'Laisser un message',
-    subtitle: 'Écrivez vos mots doux à Maman',
+    Icon: PenLine,
+    title: 'Laisser un mot',
+    subtitle: 'Vos mots doux pour Maman',
     href: '/message',
-    gradient: 'linear-gradient(135deg, #FFF8E4 0%, #FFF0C6 100%)',
+    gradient: 'linear-gradient(135deg, #F0EBE2 0%, #E4D8C0 100%)',
+    iconColor: '#B8965A',
   },
 ]
 
@@ -43,28 +47,25 @@ export default function HomePage() {
       <LoadingScreen />
 
       <div className="min-h-screen px-5 pt-12 pb-4">
-        {/* Hero Section */}
+        {/* Hero */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
           className="relative rounded-4xl overflow-hidden mb-8"
-          style={{
-            background: 'linear-gradient(135deg, #F4A7B9 0%, #C9A7E8 50%, #A7C7E7 100%)',
-            backgroundSize: '200% 200%',
-          }}
+          style={{ background: 'linear-gradient(160deg, #1E1812 0%, #4A2E24 55%, #B87A6A 100%)' }}
         >
-          {/* Animated background blobs */}
+          {/* Decorative blobs */}
           <div className="absolute inset-0 overflow-hidden">
             <motion.div
-              animate={{ scale: [1, 1.2, 1], rotate: [0, 180, 360] }}
-              transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-              className="absolute -top-16 -right-16 w-64 h-64 rounded-full bg-white/10"
+              animate={{ scale: [1, 1.15, 1], rotate: [0, 90, 0] }}
+              transition={{ duration: 22, repeat: Infinity, ease: 'linear' }}
+              className="absolute -top-20 -right-20 w-72 h-72 rounded-full bg-white/5"
             />
             <motion.div
-              animate={{ scale: [1.2, 1, 1.2], rotate: [360, 180, 0] }}
-              transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
-              className="absolute -bottom-16 -left-16 w-56 h-56 rounded-full bg-white/10"
+              animate={{ scale: [1.1, 1, 1.1], rotate: [0, -90, 0] }}
+              transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
+              className="absolute -bottom-20 -left-20 w-64 h-64 rounded-full bg-white/5"
             />
           </div>
 
@@ -74,33 +75,38 @@ export default function HomePage() {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.3, type: 'spring', stiffness: 300 }}
-              className="inline-flex items-center gap-2 bg-white/25 backdrop-blur-sm rounded-full px-4 py-1.5 mb-5"
+              className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 mb-5"
             >
-              <Sparkles size={14} className="text-white" />
-              <span className="text-white text-xs font-semibold tracking-wide uppercase">
+              <Sparkles size={12} className="text-white/70" />
+              <span className="text-white/80 text-xs font-medium tracking-widest uppercase font-sans">
                 30 Août 2026
               </span>
             </motion.div>
 
-            {/* Main title */}
+            {/* Title */}
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.6 }}
-              className="text-5xl font-bold text-white mb-3 drop-shadow-sm tracking-tight"
+              className="text-5xl font-light text-white mb-2 tracking-tight font-display"
             >
-              Maman ❤️
+              Maman
             </motion.h1>
-
+            <motion.div
+              initial={{ opacity: 0, scaleX: 0 }}
+              animate={{ opacity: 1, scaleX: 1 }}
+              transition={{ delay: 0.4, duration: 0.5 }}
+              className="w-10 h-px bg-white/40 mx-auto mb-4"
+            />
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.4, duration: 0.6 }}
-              className="text-white/85 text-lg font-light leading-relaxed"
+              transition={{ delay: 0.45, duration: 0.6 }}
+              className="text-white/70 text-base font-light leading-relaxed font-sans"
             >
               Célébrons ensemble
               <br />
-              ce jour spécial
+              ce jour si spécial
             </motion.p>
 
             {/* Countdown */}
@@ -108,9 +114,9 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.6 }}
-              className="mt-7"
+              className="mt-8"
             >
-              <p className="text-white/70 text-xs font-medium uppercase tracking-widest mb-3">
+              <p className="text-white/40 text-xs font-medium uppercase tracking-widest mb-3 font-sans">
                 Compte à rebours
               </p>
               <CountdownTimer />
@@ -121,9 +127,9 @@ export default function HomePage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.9 }}
-              className="mt-7 pt-5 border-t border-white/20"
+              className="mt-7 pt-5 border-t border-white/10"
             >
-              <p className="text-white/80 text-sm italic font-light leading-relaxed">
+              <p className="text-white/55 text-sm italic font-light leading-relaxed font-display">
                 &ldquo;Nous avons hâte de célébrer ensemble.&rdquo;
               </p>
             </motion.div>
@@ -135,37 +141,45 @@ export default function HomePage() {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.5, duration: 0.5 }}
-          className="mb-4"
+          className="mb-5"
         >
-          <h2 className="text-xl font-bold text-text-dark">
+          <h2 className="text-2xl font-light text-text-dark font-display">
             Participer à la fête
           </h2>
-          <p className="text-text-muted text-sm mt-1">
-            Tout est préparé avec amour 💕
+          <p className="text-text-muted text-sm mt-1 font-sans">
+            Tout est préparé avec amour
           </p>
         </motion.div>
 
-        {/* Feature cards grid */}
-        <div className="grid grid-cols-2 gap-4 pb-6">
+        {/* Feature cards */}
+        <div className="grid grid-cols-2 gap-3.5 pb-6">
           {cards.map((card, i) => (
-            <FeatureCard
-              key={card.href}
-              {...card}
-              delay={0.6 + i * 0.1}
-            />
+            <FeatureCard key={card.href} {...card} delay={0.6 + i * 0.08} />
           ))}
         </div>
 
-        {/* Footer */}
+        {/* Arrow AI footer */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2 }}
-          className="text-center py-4"
+          className="flex justify-center py-4 pb-2"
         >
-          <p className="text-text-muted text-xs">
-            Fait avec ❤️ pour Maman
-          </p>
+          <a
+            href="https://arrow-ai.us"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full glass-card"
+          >
+            <img src="/favicon-arrow.ico" width={13} height={13} alt="" aria-hidden />
+            <span className="text-[10px] text-text-muted font-sans">Powered by</span>
+            <span
+              className="text-[10px] text-text-dark tracking-widest uppercase font-sans"
+              style={{ fontWeight: 700 }}
+            >
+              Arrow AI
+            </span>
+          </a>
         </motion.div>
       </div>
     </>

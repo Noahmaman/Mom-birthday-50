@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronLeft, Video, Upload, Circle, Square, Check, RotateCcw } from 'lucide-react'
+import { ChevronLeft, Clapperboard, Upload, Circle, Square, Check, RotateCcw, Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -11,7 +11,7 @@ import { supabase } from '@/lib/supabase'
 
 type Step = 'choose' | 'record' | 'upload' | 'preview' | 'submitting' | 'success'
 
-const MAX_DURATION = 90 // seconds
+const MAX_DURATION = 90
 
 export default function VideoPage() {
   const router = useRouter()
@@ -39,18 +39,15 @@ export default function VideoPage() {
         audio: true,
       })
       streamRef.current = stream
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream
-      }
+      if (videoRef.current) videoRef.current.srcObject = stream
       setStep('record')
     } catch {
-      setError('Impossible d\'accéder à la caméra. Veuillez autoriser l\'accès.')
+      setError("Impossible d'accéder à la caméra. Veuillez autoriser l'accès.")
     }
   }, [])
 
   const startRecording = useCallback(() => {
     if (!streamRef.current) return
-
     chunksRef.current = []
     const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
       ? 'video/webm;codecs=vp9'
@@ -61,19 +58,14 @@ export default function VideoPage() {
     const recorder = new MediaRecorder(streamRef.current, { mimeType })
     mediaRecorderRef.current = recorder
 
-    recorder.ondataavailable = (e) => {
-      if (e.data.size > 0) chunksRef.current.push(e.data)
-    }
-
+    recorder.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data) }
     recorder.onstop = () => {
       const blob = new Blob(chunksRef.current, { type: mimeType })
       setVideoBlob(blob)
       const url = URL.createObjectURL(blob)
       setVideoUrl(url)
       setStep('preview')
-      if (previewRef.current) {
-        previewRef.current.src = url
-      }
+      if (previewRef.current) previewRef.current.src = url
     }
 
     recorder.start(100)
@@ -82,40 +74,22 @@ export default function VideoPage() {
 
     timerRef.current = setInterval(() => {
       setRecordingTime((t) => {
-        if (t >= MAX_DURATION - 1) {
-          stopRecording()
-          return MAX_DURATION
-        }
+        if (t >= MAX_DURATION - 1) { stopRecording(); return MAX_DURATION }
         return t + 1
       })
     }, 1000)
   }, [])
 
   const stopRecording = useCallback(() => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current)
-      timerRef.current = null
-    }
-    if (mediaRecorderRef.current?.state !== 'inactive') {
-      mediaRecorderRef.current?.stop()
-    }
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((t) => t.stop())
-      streamRef.current = null
-    }
+    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null }
+    if (mediaRecorderRef.current?.state !== 'inactive') mediaRecorderRef.current?.stop()
+    if (streamRef.current) { streamRef.current.getTracks().forEach((t) => t.stop()); streamRef.current = null }
     setRecording(false)
   }, [])
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-
-    const allowedTypes = ['video/mp4', 'video/webm', 'video/mov', 'video/quicktime']
-    if (!allowedTypes.includes(file.type) && !file.name.match(/\.(mp4|webm|mov)$/i)) {
-      setError('Format non supporté. Utilisez MP4, WebM ou MOV.')
-      return
-    }
-
     setVideoBlob(file)
     const url = URL.createObjectURL(file)
     setVideoUrl(url)
@@ -123,14 +97,8 @@ export default function VideoPage() {
   }
 
   const handleSubmit = async () => {
-    if (!authorName.trim()) {
-      setError('Veuillez entrer votre nom')
-      return
-    }
-    if (!videoBlob) {
-      setError('Aucune vidéo sélectionnée')
-      return
-    }
+    if (!authorName.trim()) { setError('Veuillez entrer votre nom'); return }
+    if (!videoBlob) { setError('Aucune vidéo sélectionnée'); return }
 
     setStep('submitting')
     setError(null)
@@ -138,39 +106,26 @@ export default function VideoPage() {
 
     try {
       const fileName = `${Date.now()}-${authorName.replace(/\s+/g, '-')}.webm`
-
-      // Upload to Supabase Storage
       const { error: uploadError } = await supabase.storage
         .from('videos')
-        .upload(fileName, videoBlob, {
-          contentType: videoBlob.type || 'video/webm',
-          upsert: false,
-        })
+        .upload(fileName, videoBlob, { contentType: videoBlob.type || 'video/webm', upsert: false })
 
       if (uploadError) throw uploadError
-
       setUploadProgress(80)
 
-      // Get public URL
-      const { data: urlData } = supabase.storage
-        .from('videos')
-        .getPublicUrl(fileName)
+      const { data: urlData } = supabase.storage.from('videos').getPublicUrl(fileName)
 
-      const publicUrl = urlData.publicUrl
-
-      // Save to database via API
       const res = await fetch('/api/videos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ author_name: authorName, url: publicUrl }),
+        body: JSON.stringify({ author_name: authorName, url: urlData.publicUrl }),
       })
-
-      if (!res.ok) throw new Error('Erreur lors de l\'enregistrement')
+      if (!res.ok) throw new Error()
 
       setUploadProgress(100)
       setStep('success')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur lors de l\'upload')
+      setError(err instanceof Error ? err.message : "Erreur lors de l'upload")
       setStep('preview')
     }
   }
@@ -192,28 +147,22 @@ export default function VideoPage() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ type: 'spring', stiffness: 260, damping: 20 }}
           className="glass-card rounded-4xl p-8 max-w-sm w-full text-center card-shadow"
-          style={{ background: 'linear-gradient(135deg, #EDE4F9 0%, #FFF8E4 100%)' }}
+          style={{ background: 'linear-gradient(135deg, #EAE6F0 0%, #F0EBE2 100%)' }}
         >
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: 'spring', stiffness: 300 }}
             className="w-20 h-20 rounded-full mx-auto mb-5 flex items-center justify-center"
-            style={{ background: 'linear-gradient(135deg, #C9A7E8 0%, #F4A7B9 100%)' }}
+            style={{ background: 'linear-gradient(135deg, #7A6B9A 0%, #B87A6A 100%)' }}
           >
-            <Check size={36} className="text-white" strokeWidth={3} />
+            <Check size={34} className="text-white" strokeWidth={2.5} />
           </motion.div>
-          <h2 className="text-2xl font-bold text-text-dark mb-2">
-            Vidéo envoyée ! 🎉
-          </h2>
-          <p className="text-text-muted leading-relaxed">
-            Merci {authorName} ! Votre message vidéo sera diffusé lors de la fête.
+          <h2 className="text-3xl font-light text-text-dark mb-2 font-display">Vidéo envoyée</h2>
+          <p className="text-text-muted leading-relaxed font-sans text-sm">
+            Merci {authorName} ! Votre message sera diffusé lors de la fête.
           </p>
-          <Button
-            variant="primary"
-            className="w-full mt-6"
-            onClick={() => router.push('/')}
-          >
+          <Button className="w-full mt-6 font-sans" onClick={() => router.push('/')}>
             Retour à l&apos;accueil
           </Button>
         </motion.div>
@@ -232,18 +181,15 @@ export default function VideoPage() {
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-            className="text-5xl mb-4 inline-block"
+            className="w-16 h-16 rounded-full mx-auto mb-5 flex items-center justify-center"
+            style={{ background: 'linear-gradient(135deg, #EAE6F0 0%, #D8D0E8 100%)' }}
           >
-            🎥
+            <Loader2 size={28} strokeWidth={1.5} className="text-secondary" />
           </motion.div>
-          <h2 className="text-xl font-bold text-text-dark mb-2">
-            Envoi en cours...
-          </h2>
-          <p className="text-text-muted text-sm mb-6">
-            Veuillez patienter
-          </p>
+          <h2 className="text-xl font-light text-text-dark mb-1 font-display">Envoi en cours</h2>
+          <p className="text-text-muted text-sm mb-6 font-sans">Veuillez patienter</p>
           <Progress value={uploadProgress} />
-          <p className="text-text-muted text-xs mt-2">{uploadProgress}%</p>
+          <p className="text-text-muted text-xs mt-2 font-sans">{uploadProgress}%</p>
         </motion.div>
       </div>
     )
@@ -251,145 +197,83 @@ export default function VideoPage() {
 
   return (
     <div className="min-h-screen px-5 pt-14 pb-8">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex items-center gap-3 mb-8"
-      >
+      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-3 mb-8">
         <button
-          onClick={() => {
-            stopRecording()
-            router.back()
-          }}
+          onClick={() => { stopRecording(); router.back() }}
           className="w-10 h-10 glass-card rounded-full flex items-center justify-center card-shadow"
         >
           <ChevronLeft size={20} className="text-text-dark" />
         </button>
         <div>
-          <h1 className="text-2xl font-bold text-text-dark">Message vidéo</h1>
-          <p className="text-text-muted text-sm">Pour Maman avec amour 🎥</p>
+          <h1 className="text-2xl font-light text-text-dark font-display">Message vidéo</h1>
+          <p className="text-text-muted text-sm font-sans">Pour Maman avec amour</p>
         </div>
       </motion.div>
 
-      {/* Author name */}
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="mb-5"
-      >
-        <label className="block text-sm font-semibold text-text-dark mb-2">
-          Votre prénom <span className="text-primary-pink-dark">*</span>
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-5">
+        <label className="block text-sm font-medium text-text-dark mb-2 font-sans">
+          Votre prénom <span className="text-primary">*</span>
         </label>
-        <Input
-          placeholder="Entrez votre prénom"
-          value={authorName}
-          onChange={(e) => setAuthorName(e.target.value)}
-        />
+        <Input placeholder="Entrez votre prénom" value={authorName} onChange={(e) => setAuthorName(e.target.value)} />
       </motion.div>
 
       <AnimatePresence mode="wait">
-        {/* Step: Choose */}
         {step === 'choose' && (
-          <motion.div
-            key="choose"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="space-y-4"
-          >
-            {/* Record option */}
+          <motion.div key="choose" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-4">
             <motion.button
               whileTap={{ scale: 0.97 }}
               onClick={startCamera}
               className="w-full rounded-3xl p-6 flex items-center gap-4 card-shadow text-left"
-              style={{ background: 'linear-gradient(135deg, #EDE4F9 0%, #D9C6F0 100%)' }}
+              style={{ background: 'linear-gradient(135deg, #EAE6F0 0%, #D8D0E8 100%)' }}
             >
               <div className="w-14 h-14 rounded-2xl bg-white/50 flex items-center justify-center flex-shrink-0">
-                <Video size={28} className="text-accent-purple" strokeWidth={1.8} />
+                <Clapperboard size={26} className="text-secondary" strokeWidth={1.6} />
               </div>
               <div>
-                <p className="font-bold text-text-dark text-lg">Enregistrer une vidéo</p>
-                <p className="text-text-muted text-sm mt-1">
-                  Utilisez votre caméra · Max {MAX_DURATION}s
-                </p>
+                <p className="font-semibold text-text-dark text-base font-sans">Enregistrer une vidéo</p>
+                <p className="text-text-muted text-sm mt-1 font-sans">Utilisez votre caméra · Max {MAX_DURATION}s</p>
               </div>
             </motion.button>
 
-            {/* Upload option */}
             <motion.button
               whileTap={{ scale: 0.97 }}
               onClick={() => fileInputRef.current?.click()}
               className="w-full rounded-3xl p-6 flex items-center gap-4 card-shadow text-left"
-              style={{ background: 'linear-gradient(135deg, #FFF8E4 0%, #FFE4B0 100%)' }}
+              style={{ background: 'linear-gradient(135deg, #F0EBE2 0%, #E4D8C0 100%)' }}
             >
               <div className="w-14 h-14 rounded-2xl bg-white/50 flex items-center justify-center flex-shrink-0">
-                <Upload size={28} className="text-soft-yellow" strokeWidth={1.8} />
+                <Upload size={26} className="text-accent-gold" strokeWidth={1.6} />
               </div>
               <div>
-                <p className="font-bold text-text-dark text-lg">Télécharger une vidéo</p>
-                <p className="text-text-muted text-sm mt-1">
-                  Depuis votre galerie · MP4, WebM, MOV
-                </p>
+                <p className="font-semibold text-text-dark text-base font-sans">Télécharger une vidéo</p>
+                <p className="text-text-muted text-sm mt-1 font-sans">Depuis votre galerie · MP4, WebM, MOV</p>
               </div>
             </motion.button>
 
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="video/*"
-              className="hidden"
-              onChange={handleFileUpload}
-            />
-
-            {error && (
-              <p className="text-red-500 text-sm font-medium px-1">{error}</p>
-            )}
+            <input ref={fileInputRef} type="file" accept="video/*" className="hidden" onChange={handleFileUpload} />
+            {error && <p className="text-red-500 text-sm font-medium px-1 font-sans">{error}</p>}
           </motion.div>
         )}
 
-        {/* Step: Record */}
         {step === 'record' && (
-          <motion.div
-            key="record"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="space-y-4"
-          >
+          <motion.div key="record" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="space-y-4">
             <div className="relative rounded-3xl overflow-hidden bg-black aspect-video card-shadow">
-              <video
-                ref={videoRef}
-                autoPlay
-                muted
-                playsInline
-                className="w-full h-full object-cover"
-              />
-
-              {/* Recording indicator */}
+              <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover" />
               {recording && (
                 <div className="absolute top-4 left-4 flex items-center gap-2 bg-black/60 rounded-full px-3 py-1.5">
                   <motion.div
                     animate={{ opacity: [1, 0, 1] }}
                     transition={{ duration: 1, repeat: Infinity }}
-                    className="w-2.5 h-2.5 rounded-full bg-red-500"
+                    className="w-2 h-2 rounded-full bg-red-500"
                   />
-                  <span className="text-white text-sm font-medium">
-                    {String(Math.floor(recordingTime / 60)).padStart(2, '0')}:
-                    {String(recordingTime % 60).padStart(2, '0')}
+                  <span className="text-white text-sm font-medium font-sans">
+                    {String(Math.floor(recordingTime / 60)).padStart(2, '0')}:{String(recordingTime % 60).padStart(2, '0')}
                   </span>
                 </div>
               )}
-
-              {/* Max time indicator */}
               {recording && (
-                <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-white/20">
-                  <motion.div
-                    className="h-full bg-red-500"
-                    style={{ width: `${(recordingTime / MAX_DURATION) * 100}%` }}
-                    transition={{ duration: 0.5 }}
-                  />
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
+                  <div className="h-full bg-red-400 transition-all duration-1000" style={{ width: `${(recordingTime / MAX_DURATION) * 100}%` }} />
                 </div>
               )}
             </div>
@@ -400,73 +284,48 @@ export default function VideoPage() {
                   whileTap={{ scale: 0.9 }}
                   onClick={startRecording}
                   className="w-16 h-16 rounded-full flex items-center justify-center"
-                  style={{ background: 'linear-gradient(135deg, #F4A7B9 0%, #E8849A 100%)' }}
+                  style={{ background: 'linear-gradient(135deg, #B87A6A 0%, #9A5E4E 100%)' }}
                 >
-                  <Circle size={32} className="text-white" fill="white" />
+                  <Circle size={30} className="text-white" fill="white" />
                 </motion.button>
               ) : (
                 <motion.button
                   whileTap={{ scale: 0.9 }}
                   onClick={stopRecording}
-                  className="w-16 h-16 rounded-full flex items-center justify-center"
-                  style={{ background: 'linear-gradient(135deg, #FF6B6B 0%, #EE5A52 100%)' }}
+                  className="w-16 h-16 rounded-full flex items-center justify-center bg-red-500"
                 >
-                  <Square size={28} className="text-white" fill="white" />
+                  <Square size={26} className="text-white" fill="white" />
                 </motion.button>
               )}
             </div>
 
-            <p className="text-center text-text-muted text-sm">
-              {recording
-                ? `Enregistrement... Max ${MAX_DURATION - recordingTime}s restantes`
-                : 'Appuyez sur le bouton pour démarrer'}
+            <p className="text-center text-text-muted text-sm font-sans">
+              {recording ? `Enregistrement en cours · ${MAX_DURATION - recordingTime}s restantes` : 'Appuyez pour démarrer'}
             </p>
           </motion.div>
         )}
 
-        {/* Step: Preview */}
         {step === 'preview' && videoUrl && (
-          <motion.div
-            key="preview"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="space-y-4"
-          >
+          <motion.div key="preview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-4">
             <div className="rounded-3xl overflow-hidden bg-black aspect-video card-shadow">
-              <video
-                ref={previewRef}
-                src={videoUrl}
-                controls
-                playsInline
-                className="w-full h-full object-cover"
-              />
+              <video ref={previewRef} src={videoUrl} controls playsInline className="w-full h-full object-cover" />
             </div>
 
-            <div className="glass-card rounded-2xl p-4 card-shadow">
-              <p className="text-text-muted text-sm text-center">
-                ✅ Votre vidéo est prête à être envoyée
-              </p>
+            <div className="glass-card rounded-2xl p-4 card-shadow flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-accent-sage/20 flex items-center justify-center flex-shrink-0">
+                <Check size={16} className="text-accent-sage" strokeWidth={2.5} />
+              </div>
+              <p className="text-text-muted text-sm font-sans">Votre vidéo est prête à être envoyée</p>
             </div>
 
-            {error && (
-              <p className="text-red-500 text-sm font-medium px-1">{error}</p>
-            )}
+            {error && <p className="text-red-500 text-sm font-medium px-1 font-sans">{error}</p>}
 
             <div className="flex gap-3">
-              <Button
-                variant="secondary"
-                className="flex-1"
-                onClick={handleRetake}
-              >
+              <Button variant="secondary" className="flex-1 font-sans" onClick={handleRetake}>
                 <RotateCcw size={16} className="mr-2" />
                 Recommencer
               </Button>
-              <Button
-                className="flex-1"
-                onClick={handleSubmit}
-                disabled={!authorName.trim()}
-              >
+              <Button className="flex-1 font-sans" onClick={handleSubmit} disabled={!authorName.trim()}>
                 <Check size={16} className="mr-2" />
                 Envoyer
               </Button>
