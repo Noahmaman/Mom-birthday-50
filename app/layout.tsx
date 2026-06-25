@@ -1,20 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import "./globals.css";
 import BottomNav from "@/components/BottomNav";
-
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-display",
-  display: "swap",
-});
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "Maman",
@@ -31,10 +17,8 @@ export const metadata: Metadata = {
     type: "website",
   },
   icons: {
-    icon: "/favicon-arrow.ico",
-    apple: [
-      { url: "/icons/icon-192.png", sizes: "192x192" },
-    ],
+    icon: "/favicon-birthday.svg",
+    apple: [{ url: "/favicon-birthday.svg" }],
   },
 };
 
@@ -53,10 +37,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className={`h-full ${cormorant.variable} ${dmSans.variable}`}>
+    <html lang="fr" className="h-full">
       <head>
-        <link rel="icon" href="/favicon-arrow.ico" />
-        <link rel="apple-touch-icon" href="/arrow-icon.png" />
+        <link rel="icon" href="/favicon-birthday.svg" />
+        <link rel="apple-touch-icon" href="/favicon-birthday.svg" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />

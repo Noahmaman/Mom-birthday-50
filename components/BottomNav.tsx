@@ -31,7 +31,7 @@ export default function BottomNav() {
         className="flex items-center gap-1.5 px-2.5 py-1 rounded-full"
         style={{ background: 'rgba(255,252,248,0.7)', backdropFilter: 'blur(10px)' }}
       >
-        <img src="/favicon-arrow.ico" width={11} height={11} alt="" aria-hidden />
+        <img src="/arrow-icon.png" width={11} height={11} alt="" aria-hidden />
         <span className="text-[9px] text-text-muted font-sans">Powered by</span>
         <span
           className="text-[9px] text-text-dark uppercase tracking-widest font-sans"

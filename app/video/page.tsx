@@ -35,7 +35,7 @@ export default function VideoPage() {
   const startCamera = useCallback(async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+        video: { facingMode: 'user', width: { ideal: 720 }, height: { ideal: 1280 } },
         audio: true,
       })
       streamRef.current = stream
@@ -257,8 +257,8 @@ export default function VideoPage() {
 
         {step === 'record' && (
           <motion.div key="record" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="space-y-4">
-            <div className="relative rounded-3xl overflow-hidden bg-black aspect-video card-shadow">
-              <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover" />
+            <div className="relative rounded-3xl overflow-hidden bg-black aspect-[9/16] max-h-[70vh] mx-auto card-shadow">
+              <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover" style={{ transform: 'scaleX(-1)' }} />
               {recording && (
                 <div className="absolute top-4 left-4 flex items-center gap-2 bg-black/60 rounded-full px-3 py-1.5">
                   <motion.div
@@ -307,7 +307,7 @@ export default function VideoPage() {
 
         {step === 'preview' && videoUrl && (
           <motion.div key="preview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-4">
-            <div className="rounded-3xl overflow-hidden bg-black aspect-video card-shadow">
+            <div className="rounded-3xl overflow-hidden bg-black aspect-[9/16] max-h-[70vh] mx-auto card-shadow">
               <video ref={previewRef} src={videoUrl} controls playsInline className="w-full h-full object-cover" />
             </div>
 

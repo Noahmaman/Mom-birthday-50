@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import type { PlaylistItem } from '@/lib/supabase'
 import { detectPlatform, getPlatformColor, extractYoutubeId } from '@/lib/utils'
-import Image from 'next/image'
 
 /* ── Curated suggestions ──────────────────────────────────────── */
 const SUGGESTED_SONGS = [
@@ -50,7 +49,8 @@ function SongCard({ item, onDelete }: { item: PlaylistItem; onDelete: (id: strin
         style={{ width: 52, height: 52, background: 'linear-gradient(135deg, #F2ECE6 0%, #EAE6F0 100%)' }}
       >
         {item.artwork_url && !imgError ? (
-          <Image src={item.artwork_url} alt={item.title || ''} width={52} height={52} className="w-full h-full object-cover" onError={() => setImgError(true)} />
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={item.artwork_url} alt={item.title || ''} className="w-full h-full object-cover" onError={() => setImgError(true)} />
         ) : (
           <Music2 size={20} className="text-text-muted" strokeWidth={1.5} />
         )}
@@ -136,7 +136,7 @@ export default function PlaylistPage() {
 
   const extractMetadata = (inputUrl: string) => {
     const ytId = extractYoutubeId(inputUrl)
-    if (ytId) return { title: pickedSong?.title || 'Vidéo YouTube', artist: pickedSong?.artist || 'YouTube', artwork_url: `https://img.youtube.com/vi/${ytId}/mqdefault.jpg` }
+    if (ytId) return { title: pickedSong?.title || 'Vidéo YouTube', artist: pickedSong?.artist || 'YouTube', artwork_url: `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` }
     return {}
   }
 

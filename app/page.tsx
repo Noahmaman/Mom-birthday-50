@@ -171,7 +171,7 @@ export default function HomePage() {
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full glass-card"
           >
-            <img src="/favicon-arrow.ico" width={13} height={13} alt="" aria-hidden />
+            <img src="/arrow-icon.png" width={13} height={13} alt="" aria-hidden />
             <span className="text-[10px] text-text-muted font-sans">Powered by</span>
             <span
               className="text-[10px] text-text-dark tracking-widest uppercase font-sans"
