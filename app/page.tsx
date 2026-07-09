@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { CalendarCheck, Clapperboard, Headphones, PenLine, Sparkles } from 'lucide-react'
+import Image from 'next/image'
 import CountdownTimer from '@/components/CountdownTimer'
 import FeatureCard from '@/components/FeatureCard'
 import LoadingScreen from '@/components/LoadingScreen'
@@ -41,6 +42,29 @@ const cards = [
   },
 ]
 
+const memories = [
+  {
+    src: '/memories/maman-portrait-1.jpg',
+    alt: 'Souvenir de Maman',
+    label: 'Maman',
+  },
+  {
+    src: '/memories/maman-portrait-2.jpg',
+    alt: 'Portrait souvenir',
+    label: 'Sourire',
+  },
+  {
+    src: '/memories/maman-portrait-3.jpg',
+    alt: 'Photo de famille',
+    label: 'Famille',
+  },
+  {
+    src: '/memories/maman-portrait-4.jpg',
+    alt: 'Moment partagé',
+    label: 'Amour',
+  },
+]
+
 export default function HomePage() {
   return (
     <>
@@ -52,30 +76,39 @@ export default function HomePage() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
-          className="relative rounded-4xl overflow-hidden mb-8"
-          style={{ background: 'linear-gradient(160deg, #1E1812 0%, #4A2E24 55%, #B87A6A 100%)' }}
+          className="relative rounded-4xl overflow-hidden mb-7 min-h-[560px] flex items-end card-shadow"
         >
-          {/* Decorative blobs */}
-          <div className="absolute inset-0 overflow-hidden">
-            <motion.div
-              animate={{ scale: [1, 1.15, 1], rotate: [0, 90, 0] }}
-              transition={{ duration: 22, repeat: Infinity, ease: 'linear' }}
-              className="absolute -top-20 -right-20 w-72 h-72 rounded-full bg-white/5"
-            />
-            <motion.div
-              animate={{ scale: [1.1, 1, 1.1], rotate: [0, -90, 0] }}
-              transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
-              className="absolute -bottom-20 -left-20 w-64 h-64 rounded-full bg-white/5"
-            />
+          <Image
+            src="/memories/maman-wide.jpg"
+            alt="Maman entourée de souvenirs"
+            fill
+            priority
+            sizes="(max-width: 768px) 100vw, 430px"
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/28 to-[#1E1812]/88" />
+          <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-[#1E1812] to-transparent" />
+
+          <div className="absolute left-4 top-4 right-4 flex items-start justify-between gap-3">
+            <div className="rounded-full bg-white/18 px-3 py-1.5 backdrop-blur-md">
+              <span className="text-white/90 text-[11px] font-semibold uppercase tracking-widest font-sans">
+                Anniversaire
+              </span>
+            </div>
+            <div className="rounded-full bg-white/18 px-3 py-1.5 backdrop-blur-md">
+              <span className="text-white/90 text-[11px] font-semibold uppercase tracking-widest font-sans">
+                30 Août
+              </span>
+            </div>
           </div>
 
-          <div className="relative z-10 px-6 pt-10 pb-8 text-center">
+          <div className="relative z-10 px-6 pt-32 pb-8 text-center w-full">
             {/* Badge */}
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.3, type: 'spring', stiffness: 300 }}
-              className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 mb-5"
+              className="inline-flex items-center gap-2 bg-white/14 backdrop-blur-sm rounded-full px-4 py-1.5 mb-5"
             >
               <Sparkles size={12} className="text-white/70" />
               <span className="text-white/80 text-xs font-medium tracking-widest uppercase font-sans">
@@ -88,7 +121,7 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.6 }}
-              className="text-5xl font-light text-white mb-2 tracking-tight font-display"
+              className="text-6xl font-light text-white mb-2 tracking-tight font-display"
             >
               Maman
             </motion.h1>
@@ -102,7 +135,7 @@ export default function HomePage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.45, duration: 0.6 }}
-              className="text-white/70 text-base font-light leading-relaxed font-sans"
+              className="text-white/78 text-base font-light leading-relaxed font-sans"
             >
               Célébrons ensemble
               <br />
@@ -130,9 +163,54 @@ export default function HomePage() {
               className="mt-7 pt-5 border-t border-white/10"
             >
               <p className="text-white/55 text-sm italic font-light leading-relaxed font-display">
-                &ldquo;Nous avons hâte de célébrer ensemble.&rdquo;
+                &ldquo;Une soirée pleine de souvenirs, de musique et d&apos;amour.&rdquo;
               </p>
             </motion.div>
+          </div>
+        </motion.div>
+
+        {/* Memories */}
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35, duration: 0.5 }}
+          className="mb-8"
+        >
+          <div className="flex items-end justify-between gap-4 mb-3">
+            <div>
+              <h2 className="text-2xl font-light text-text-dark font-display">
+                Souvenirs
+              </h2>
+              <p className="text-text-muted text-sm mt-1 font-sans">
+                Quelques images pour ouvrir la fête
+              </p>
+            </div>
+            <span className="text-xs text-text-muted font-sans">{memories.length} photos</span>
+          </div>
+
+          <div className="flex gap-3 overflow-x-auto pb-2 -mx-5 px-5 no-scrollbar">
+            {memories.map((memory, index) => (
+              <motion.figure
+                key={memory.src}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.45 + index * 0.08 }}
+                className="relative h-48 w-36 flex-shrink-0 overflow-hidden rounded-3xl card-shadow bg-white/60"
+              >
+                <Image
+                  src={memory.src}
+                  alt={memory.alt}
+                  fill
+                  sizes="144px"
+                  className="object-cover"
+                />
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-3 pt-10">
+                  <figcaption className="text-white text-xs font-semibold font-sans">
+                    {memory.label}
+                  </figcaption>
+                </div>
+              </motion.figure>
+            ))}
           </div>
         </motion.div>
 

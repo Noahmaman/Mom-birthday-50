@@ -112,6 +112,14 @@ body {
   box-shadow: 0 8px 32px rgba(30, 24, 18, 0.10), 0 2px 8px rgba(30, 24, 18, 0.05);
 }
 
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;

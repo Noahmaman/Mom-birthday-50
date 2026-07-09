@@ -87,14 +87,16 @@ export async function extractYoutubeMetadata(url: string): Promise<{
 
 export function extractYoutubeId(url: string): string | null {
   const patterns = [
-    /youtu\.be\/([^#&?]*)/,
+    /youtu\.be\/([^#&?/]*)/,
     /youtube\.com\/watch\?v=([^#&?]*)/,
-    /youtube\.com\/embed\/([^#&?]*)/,
-    /youtube\.com\/v\/([^#&?]*)/,
+    /youtube\.com\/shorts\/([^#&?/]*)/,
+    /youtube\.com\/embed\/([^#&?/]*)/,
+    /youtube\.com\/v\/([^#&?/]*)/,
+    /m\.youtube\.com\/watch\?v=([^#&?]*)/,
   ]
   for (const pattern of patterns) {
     const match = url.match(pattern)
-    if (match) return match[1]
+    if (match?.[1]) return match[1]
   }
   return null
 }

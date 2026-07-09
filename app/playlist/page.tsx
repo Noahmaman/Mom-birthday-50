@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import type { PlaylistItem } from '@/lib/supabase'
-import { detectPlatform, getPlatformColor, extractYoutubeId } from '@/lib/utils'
+import { getPlatformColor } from '@/lib/utils'
 
 /* ── Curated suggestions ──────────────────────────────────────── */
 const SUGGESTED_SONGS = [
@@ -134,12 +134,6 @@ export default function PlaylistPage() {
 
   useEffect(() => { fetchSongs() }, [fetchSongs])
 
-  const extractMetadata = (inputUrl: string) => {
-    const ytId = extractYoutubeId(inputUrl)
-    if (ytId) return { title: pickedSong?.title || 'Vidéo YouTube', artist: pickedSong?.artist || 'YouTube', artwork_url: `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` }
-    return {}
-  }
-
   const handleAdd = async (overrideUrl?: string) => {
     const target = overrideUrl || url
     if (!target.trim()) { setError('Veuillez coller un lien'); return }
@@ -147,14 +141,13 @@ export default function PlaylistPage() {
 
     setLoading(true)
     setError(null)
-    const platform = detectPlatform(target)
-    const metadata = extractMetadata(target)
 
     try {
       const res = await fetch('/api/playlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: target, platform, added_by: addedBy || undefined, ...metadata }),
+        // Server fetches real title + thumbnail via oEmbed — just send URL
+        body: JSON.stringify({ url: target, added_by: addedBy || undefined }),
       })
       if (!res.ok) throw new Error()
       const newItem = await res.json()
