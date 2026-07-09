@@ -48,7 +48,7 @@ export default function LoadingScreen() {
                 30 Août 2026
               </p>
               <h1 className="text-5xl font-light text-white tracking-tight font-display">
-                Maman
+                Yael
               </h1>
               <motion.div
                 initial={{ scaleX: 0 }}

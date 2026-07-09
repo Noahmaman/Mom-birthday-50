@@ -4,19 +4,19 @@ import BottomNav from "@/components/BottomNav";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://mom-birthday-50.vercel.app"),
-  title: "Maman",
-  description: "Célébrons ensemble ce jour spécial — 30 août 2026",
+  title: "Yael",
+  description: "Célébrons ensemble l'anniversaire de Yael — 30 août 2026",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Maman",
+    title: "Yael",
   },
   openGraph: {
-    title: "Maman",
-    description: "Célébrons ensemble ce jour spécial — 30 août 2026",
+    title: "Yael",
+    description: "Célébrons ensemble l'anniversaire de Yael — 30 août 2026",
     type: "website",
-    images: [{ url: "/covers/cover-1.jpg", width: 937, height: 1280, alt: "Anniversaire de Maman" }],
+    images: [{ url: "/covers/cover-1.jpg", width: 937, height: 1280, alt: "Anniversaire de Yael" }],
   },
   icons: {
     icon: "/favicon-birthday.svg",
@@ -30,7 +30,7 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit: "cover",
-  themeColor: "#B87A6A",
+  themeColor: "#F6F1EB",
 };
 
 export default function RootLayout({

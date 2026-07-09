@@ -65,7 +65,7 @@ export default function MessagePage() {
               Message envoyé
             </h2>
             <p className="text-text-muted leading-relaxed font-sans text-sm">
-              Maman recevra votre message avec tout l&apos;amour qu&apos;il contient.
+              Yael recevra votre message avec tout l&apos;amour qu&apos;il contient.
             </p>
           </motion.div>
 
@@ -90,7 +90,7 @@ export default function MessagePage() {
           <ChevronLeft size={20} className="text-text-dark" />
         </button>
         <div>
-          <h1 className="text-2xl font-light text-text-dark font-display">Un mot pour Maman</h1>
+          <h1 className="text-2xl font-light text-text-dark font-display">Un mot pour Yael</h1>
           <p className="text-text-muted text-sm font-sans">Carte de vœux virtuelle</p>
         </div>
       </motion.div>
@@ -137,7 +137,7 @@ export default function MessagePage() {
             </span>
           </div>
           <Textarea
-            placeholder="Chère Maman, je voulais te dire..."
+            placeholder="Chère Yael, je voulais te dire..."
             rows={8}
             value={content}
             onChange={(e) => { if (e.target.value.length <= MAX_CHARS) setContent(e.target.value) }}

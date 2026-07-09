@@ -37,7 +37,7 @@ const kissOptions = [
   'Bisous fleuris',
   'Bisous dorés',
   'Bisous chaleureux',
-  'Bisous maman',
+  'Bisous Yael',
   'Bisous famille',
   'Bisous bonheur',
   'Bisous surprise',
@@ -132,7 +132,7 @@ export default function QuickRsvpModal({
                   Vous venez ?
                 </h2>
                 <p className="mt-1 text-sm text-text-muted font-sans">
-                  Réponse rapide pour la fête de Maman.
+                  Réponse rapide pour la fête de Yael.
                 </p>
               </div>
               <button

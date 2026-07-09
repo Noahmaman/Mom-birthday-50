@@ -54,7 +54,7 @@ export default function AdminPage() {
           <div className="relative h-44">
             <Image
               src="/covers/cover-1.jpg"
-              alt="Cover anniversaire de Maman"
+              alt="Cover anniversaire de Yael"
               fill
               priority
               sizes="(max-width: 768px) 100vw, 384px"
@@ -66,7 +66,7 @@ export default function AdminPage() {
                 30 Août 2026
               </p>
               <h1 className="text-white text-3xl font-light mt-1 font-display">
-                Anniversaire Maman
+                Anniversaire Yael
               </h1>
             </div>
           </div>

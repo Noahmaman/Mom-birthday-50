@@ -184,7 +184,7 @@ export default function PlaylistPage() {
           <ChevronLeft size={20} className="text-text-dark" />
         </button>
         <div>
-          <h1 className="text-2xl font-light text-text-dark font-display">La playlist de Maman</h1>
+          <h1 className="text-2xl font-light text-text-dark font-display">La playlist de Yael</h1>
           <p className="text-text-muted text-sm font-sans">{songs.length} chanson{songs.length !== 1 ? 's' : ''}</p>
         </div>
       </motion.div>

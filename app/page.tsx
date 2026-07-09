@@ -21,7 +21,7 @@ const cards = [
   {
     Icon: Clapperboard,
     title: 'Message vidéo',
-    subtitle: 'Un mot en vidéo pour Maman',
+    subtitle: 'Un mot en vidéo pour Yael',
     href: '/video',
     gradient: 'linear-gradient(135deg, #EAE6F0 0%, #D8D0E8 100%)',
     iconColor: '#7A6B9A',
@@ -37,7 +37,7 @@ const cards = [
   {
     Icon: PenLine,
     title: 'Laisser un mot',
-    subtitle: 'Vos mots doux pour Maman',
+    subtitle: 'Vos mots doux pour Yael',
     href: '/message',
     gradient: 'linear-gradient(135deg, #F0EBE2 0%, #E4D8C0 100%)',
     iconColor: '#B8965A',
@@ -47,8 +47,8 @@ const cards = [
 const memories = [
   {
     src: '/memories/maman-portrait-1.jpg',
-    alt: 'Souvenir de Maman',
-    label: 'Maman',
+    alt: 'Souvenir de Yael',
+    label: 'Yael',
   },
   {
     src: '/memories/maman-portrait-2.jpg',
@@ -91,7 +91,7 @@ export default function HomePage() {
         >
           <Image
             src={covers[0].src}
-            alt="Maman entourée de souvenirs"
+            alt="Yael entourée de souvenirs"
             fill
             priority
             sizes="(max-width: 768px) 100vw, 430px"
@@ -154,7 +154,7 @@ export default function HomePage() {
               transition={{ delay: 0.2, duration: 0.6 }}
               className="text-6xl font-light text-white mb-2 tracking-tight font-display"
             >
-              Maman
+              Yael
             </motion.h1>
             <motion.div
               initial={{ opacity: 0, scaleX: 0 }}
@@ -166,11 +166,11 @@ export default function HomePage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.45, duration: 0.6 }}
-              className="text-white/78 text-base font-light leading-relaxed font-sans"
+              className="inline-block rounded-2xl bg-black/42 px-4 py-2 text-white text-base font-medium leading-relaxed font-sans shadow-card backdrop-blur-sm"
             >
               Célébrons ensemble
               <br />
-              ce jour si spécial
+              l&apos;anniversaire de Yael
             </motion.p>
 
             {/* Countdown */}

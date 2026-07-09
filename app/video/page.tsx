@@ -83,7 +83,7 @@ export default function VideoPage() {
     context.fillStyle = gradient
     context.fillRect(0, height - gradientHeight, width, gradientHeight)
 
-    const safeName = authorName.trim() || 'Pour Maman'
+    const safeName = authorName.trim() || 'Pour Yael'
     const fontSize = Math.max(34, Math.round(width * 0.065))
     context.font = `600 ${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`
     context.textAlign = 'center'
@@ -96,7 +96,7 @@ export default function VideoPage() {
     context.shadowBlur = 0
     context.font = `500 ${Math.max(18, Math.round(width * 0.032))}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`
     context.fillStyle = 'rgba(255, 255, 255, 0.74)'
-    context.fillText('Un message pour Maman', width / 2, height - Math.max(42, height * 0.04))
+    context.fillText('Un message pour Yael', width / 2, height - Math.max(42, height * 0.04))
 
     animationRef.current = requestAnimationFrame(drawCameraFrame)
   }, [authorName])
@@ -271,7 +271,7 @@ export default function VideoPage() {
           </motion.div>
           <h2 className="text-3xl font-light text-text-dark mb-2 font-display">Vidéo envoyée</h2>
           <p className="text-text-muted leading-relaxed font-sans text-sm">
-            Merci {authorName} ! Votre message sera diffusé lors de la fête.
+            Merci {authorName} ! Votre message sera diffusé lors de la fête de Yael.
           </p>
           <Button className="w-full mt-6 font-sans" onClick={() => router.push('/')}>
             Retour à l&apos;accueil
@@ -317,7 +317,7 @@ export default function VideoPage() {
         </button>
         <div>
           <h1 className="text-2xl font-light text-text-dark font-display">Message vidéo</h1>
-          <p className="text-text-muted text-sm font-sans">Pour Maman avec amour</p>
+          <p className="text-text-muted text-sm font-sans">Pour Yael avec amour</p>
         </div>
       </motion.div>
 
@@ -368,15 +368,15 @@ export default function VideoPage() {
 
         {step === 'record' && (
           <motion.div key="record" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="space-y-4">
-            <div className="relative rounded-3xl overflow-hidden bg-black aspect-[9/16] max-h-[70vh] mx-auto card-shadow">
-              <video ref={attachCameraPreview} autoPlay muted playsInline className="w-full h-full object-contain" style={{ transform: 'scaleX(-1)' }} />
+            <div className="relative rounded-3xl overflow-hidden bg-black aspect-[3/4] max-h-[68vh] mx-auto card-shadow">
+              <video ref={attachCameraPreview} autoPlay muted playsInline className="w-full h-full object-cover" style={{ transform: 'scaleX(-1)' }} />
               <canvas ref={canvasRef} className="hidden" aria-hidden />
               <div className="absolute inset-x-0 bottom-0 px-5 pb-6 pt-16 bg-gradient-to-t from-black/70 to-transparent pointer-events-none">
                 <p className="text-white text-center text-2xl font-semibold font-sans drop-shadow-lg">
                   {authorName.trim() || 'Votre prénom'}
                 </p>
                 <p className="text-white/70 text-center text-xs font-medium uppercase tracking-widest font-sans mt-1">
-                  Un message pour Maman
+                  Un message pour Yael
                 </p>
               </div>
               {recording && (
@@ -429,8 +429,8 @@ export default function VideoPage() {
 
         {step === 'preview' && videoUrl && (
           <motion.div key="preview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-4">
-            <div className="relative rounded-3xl overflow-hidden bg-black aspect-[9/16] max-h-[70vh] mx-auto card-shadow">
-              <video ref={previewRef} src={videoUrl} controls playsInline className="w-full h-full object-contain" />
+            <div className="relative rounded-3xl overflow-hidden bg-black aspect-[3/4] max-h-[68vh] mx-auto card-shadow">
+              <video ref={previewRef} src={videoUrl} controls playsInline className="w-full h-full object-cover" />
               {videoBlob?.type && (
                 <div className="absolute left-3 top-3 rounded-full bg-black/55 px-3 py-1.5 backdrop-blur-sm pointer-events-none">
                   <span className="text-white text-xs font-semibold font-sans">{authorName.trim()}</span>

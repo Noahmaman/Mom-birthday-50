@@ -229,7 +229,7 @@ export default function RsvpPage() {
             Un mot
             <span className="text-text-muted font-normal ml-2">(optionnel)</span>
           </label>
-          <Textarea placeholder="Un message pour Maman..." rows={4} value={comment} onChange={(e) => setComment(e.target.value)} />
+          <Textarea placeholder="Un message pour Yael..." rows={4} value={comment} onChange={(e) => setComment(e.target.value)} />
         </motion.div>
 
         {/* Error */}
