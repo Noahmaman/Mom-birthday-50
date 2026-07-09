@@ -53,7 +53,7 @@ export default function AdminPage() {
         <div className="glass-card rounded-4xl overflow-hidden card-shadow bg-white/90">
           <div className="relative h-44">
             <Image
-              src="/cover-anniversaire.jpg"
+              src="/covers/cover-1.jpg"
               alt="Cover anniversaire de Maman"
               fill
               priority

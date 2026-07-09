@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     title: "Maman",
     description: "Célébrons ensemble ce jour spécial — 30 août 2026",
     type: "website",
-    images: [{ url: "/cover-anniversaire.jpg", width: 1457, height: 1080, alt: "Anniversaire de Maman" }],
+    images: [{ url: "/covers/cover-1.jpg", width: 937, height: 1280, alt: "Anniversaire de Maman" }],
   },
   icons: {
     icon: "/favicon-birthday.svg",

@@ -67,6 +67,12 @@ const memories = [
   },
 ]
 
+const covers = [
+  { src: '/covers/cover-1.jpg', alt: 'Cover anniversaire 1' },
+  { src: '/covers/cover-2.png', alt: 'Cover anniversaire 2' },
+  { src: '/covers/cover-3.png', alt: 'Cover anniversaire 3' },
+]
+
 export default function HomePage() {
   const [quickRsvpOpen, setQuickRsvpOpen] = useState(false)
 
@@ -84,7 +90,7 @@ export default function HomePage() {
           className="relative rounded-4xl overflow-hidden mb-7 min-h-[560px] flex items-end card-shadow"
         >
           <Image
-            src="/cover-anniversaire.jpg"
+            src={covers[0].src}
             alt="Maman entourée de souvenirs"
             fill
             priority
@@ -94,7 +100,7 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/28 to-[#1E1812]/88" />
           <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-[#1E1812] to-transparent" />
 
-          <div className="absolute left-4 top-4 right-4 flex items-start justify-between gap-3">
+          <div className="absolute left-4 top-4 right-4 z-10 flex items-start justify-between gap-3">
             <div className="rounded-full bg-white/18 px-3 py-1.5 backdrop-blur-md">
               <span className="text-white/90 text-[11px] font-semibold uppercase tracking-widest font-sans">
                 Anniversaire
@@ -105,6 +111,26 @@ export default function HomePage() {
                 30 Août
               </span>
             </div>
+          </div>
+
+          <div className="absolute right-4 top-16 z-10 flex flex-col gap-2">
+            {covers.slice(1).map((cover, index) => (
+              <motion.div
+                key={cover.src}
+                initial={{ opacity: 0, x: 22, rotate: 4 }}
+                animate={{ opacity: 1, x: 0, rotate: index === 0 ? 3 : -3 }}
+                transition={{ delay: 0.45 + index * 0.12, type: 'spring', stiffness: 220, damping: 20 }}
+                className="relative h-24 w-16 overflow-hidden rounded-2xl border border-white/45 shadow-card"
+              >
+                <Image
+                  src={cover.src}
+                  alt={cover.alt}
+                  fill
+                  sizes="64px"
+                  className="object-cover"
+                />
+              </motion.div>
+            ))}
           </div>
 
           <div className="relative z-10 px-6 pt-32 pb-8 text-center w-full">
@@ -158,18 +184,33 @@ export default function HomePage() {
                 Compte à rebours
               </p>
               <CountdownTimer />
-              <motion.button
-                whileTap={{ scale: 0.96 }}
-                whileHover={{ y: -1 }}
-                onClick={() => setQuickRsvpOpen(true)}
-                className="mt-5 inline-flex h-14 items-center justify-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-text-dark shadow-card font-sans"
+              <motion.div
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.85, duration: 0.45 }}
+                className="mt-5 rounded-3xl bg-white/95 p-3.5 shadow-card backdrop-blur-md"
               >
-                <CalendarCheck size={17} className="text-primary" />
-                RSVP facile
-              </motion.button>
-              <p className="mt-2 text-[11px] text-white/45 font-sans">
-                10 secondes, c&apos;est enregistré.
-              </p>
+                <div className="flex items-center justify-between gap-3">
+                  <div className="text-left">
+                    <p className="text-[11px] font-semibold uppercase tracking-widest text-primary font-sans">
+                      RSVP rapide
+                    </p>
+                    <p className="text-sm font-semibold text-text-dark font-sans">
+                      Confirmez en 10 secondes
+                    </p>
+                  </div>
+                  <motion.button
+                    whileTap={{ scale: 0.94 }}
+                    onClick={() => setQuickRsvpOpen(true)}
+                    className="h-12 flex-shrink-0 rounded-full bg-text-dark px-4 text-sm font-semibold text-white font-sans"
+                  >
+                    <span className="inline-flex items-center gap-1.5">
+                      <CalendarCheck size={16} />
+                      RSVP
+                    </span>
+                  </motion.button>
+                </div>
+              </motion.div>
             </motion.div>
 
             {/* Quote */}

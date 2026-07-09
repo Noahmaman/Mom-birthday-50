@@ -316,7 +316,7 @@ export default function DashboardPage() {
         className="relative rounded-4xl overflow-hidden mb-6 card-shadow min-h-52"
       >
         <Image
-          src="/cover-anniversaire.jpg"
+          src="/covers/cover-1.jpg"
           alt="Cover anniversaire"
           fill
           priority
