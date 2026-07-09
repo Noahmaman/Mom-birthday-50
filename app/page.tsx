@@ -178,9 +178,9 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.6 }}
-              className="mt-8"
+              className="mt-8 rounded-[2rem] bg-[#FFFCF8]/95 p-4 shadow-card backdrop-blur-md"
             >
-              <p className="text-white/40 text-xs font-medium uppercase tracking-widest mb-3 font-sans">
+              <p className="text-primary text-xs font-bold uppercase tracking-widest mb-3 font-sans">
                 Compte à rebours
               </p>
               <CountdownTimer />
@@ -188,7 +188,7 @@ export default function HomePage() {
                 initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.85, duration: 0.45 }}
-                className="mt-5 rounded-3xl bg-white/95 p-3.5 shadow-card backdrop-blur-md"
+                className="mt-5 rounded-3xl bg-[#F6F1EB] p-3.5"
               >
                 <div className="flex items-center justify-between gap-3">
                   <div className="text-left">

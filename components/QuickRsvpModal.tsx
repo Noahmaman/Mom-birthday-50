@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Check, HelpCircle, Minus, Plus, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 
 type AttendingOption = 'yes' | 'no' | 'maybe'
 
@@ -12,6 +13,39 @@ const options: { value: AttendingOption; label: string; Icon: typeof Check; colo
   { value: 'yes', label: 'Oui', Icon: Check, color: '#6A9A8A' },
   { value: 'maybe', label: 'Peut-être', Icon: HelpCircle, color: '#B8965A' },
   { value: 'no', label: 'Non', Icon: X, color: '#B87A6A' },
+]
+
+const kissOptions = [
+  'Bisous',
+  'Gros bisous',
+  'Mille bisous',
+  'Bisous doux',
+  'Bisous tendres',
+  'Bisous d’amour',
+  'Plein de bisous',
+  'Énormes bisous',
+  'Bisous câlins',
+  'Bisous soleil',
+  'Bisous sucrés',
+  'Bisous magiques',
+  'Bisous de loin',
+  'Bisous du cœur',
+  'Bisous infinis',
+  'Bisous joyeux',
+  'Bisous étoilés',
+  'Bisous pétillants',
+  'Bisous fleuris',
+  'Bisous dorés',
+  'Bisous chaleureux',
+  'Bisous maman',
+  'Bisous famille',
+  'Bisous bonheur',
+  'Bisous surprise',
+  'Bisous de fête',
+  'Bisous éternels',
+  'Bisous lumineux',
+  'Bisous tout doux',
+  'Je t’embrasse fort',
 ]
 
 export default function QuickRsvpModal({
@@ -24,6 +58,8 @@ export default function QuickRsvpModal({
   const [name, setName] = useState('')
   const [guestsCount, setGuestsCount] = useState(1)
   const [attending, setAttending] = useState<AttendingOption>('yes')
+  const [foodPreferences, setFoodPreferences] = useState('')
+  const [selectedKiss, setSelectedKiss] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -31,6 +67,7 @@ export default function QuickRsvpModal({
   const resetAndClose = () => {
     setSuccess(false)
     setError(null)
+    setSelectedKiss(null)
     onClose()
   }
 
@@ -51,8 +88,11 @@ export default function QuickRsvpModal({
           name,
           guests_count: guestsCount,
           attending,
-          allergies: '',
-          comment: 'RSVP express depuis l’accueil',
+          allergies: foodPreferences.trim(),
+          comment: [
+            'RSVP express depuis l’accueil',
+            selectedKiss ? `Bisous choisi: ${selectedKiss}` : null,
+          ].filter(Boolean).join(' · '),
         }),
       })
 
@@ -80,7 +120,7 @@ export default function QuickRsvpModal({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 24, scale: 0.98 }}
             transition={{ type: 'spring', stiffness: 280, damping: 24 }}
-            className="w-full max-w-sm rounded-4xl bg-[#FFFCF8] p-5 card-shadow"
+            className="max-h-[92vh] w-full max-w-sm overflow-y-auto rounded-4xl bg-[#FFFCF8] p-5 card-shadow no-scrollbar"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-5 flex items-start justify-between gap-4">
@@ -175,6 +215,59 @@ export default function QuickRsvpModal({
                       </button>
                     )
                   })}
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-text-dark font-sans">
+                    Préférences alimentaires
+                    <span className="ml-2 text-text-muted font-normal">(optionnel)</span>
+                  </label>
+                  <Textarea
+                    value={foodPreferences}
+                    onChange={(e) => setFoodPreferences(e.target.value)}
+                    placeholder="Végétarien, cacher, allergie, sans gluten..."
+                    rows={3}
+                    className="bg-white/80"
+                  />
+                </div>
+
+                <div>
+                  <div className="mb-2 flex items-end justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-medium text-text-dark font-sans">
+                        30 manières de dire bisous
+                      </p>
+                      <p className="text-xs text-text-muted font-sans">
+                        Choisissez-en une, rien n’est sélectionné par défaut.
+                      </p>
+                    </div>
+                    {selectedKiss && (
+                      <button
+                        onClick={() => setSelectedKiss(null)}
+                        className="text-xs font-semibold text-primary font-sans"
+                      >
+                        Effacer
+                      </button>
+                    )}
+                  </div>
+                  <div className="flex max-h-36 flex-wrap gap-2 overflow-y-auto rounded-3xl bg-[#F6F1EB] p-3 no-scrollbar">
+                    {kissOptions.map((kiss) => {
+                      const selected = selectedKiss === kiss
+                      return (
+                        <button
+                          key={kiss}
+                          onClick={() => setSelectedKiss(selected ? null : kiss)}
+                          className={`rounded-full px-3 py-2 text-xs font-semibold transition font-sans ${
+                            selected
+                              ? 'bg-text-dark text-white'
+                              : 'bg-white text-text-dark'
+                          }`}
+                        >
+                          {kiss}
+                        </button>
+                      )
+                    })}
+                  </div>
                 </div>
 
                 {error && (

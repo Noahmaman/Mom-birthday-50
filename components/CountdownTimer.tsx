@@ -16,9 +16,9 @@ function FlipNumber({ value, label }: { value: number; label: string }) {
       <div
         className="rounded-2xl px-3 py-3 min-w-[62px] flex items-center justify-center"
         style={{
-          background: 'rgba(255,255,255,0.15)',
-          backdropFilter: 'blur(8px)',
-          border: '1px solid rgba(255,255,255,0.2)',
+          background: 'rgba(30, 24, 18, 0.92)',
+          border: '1px solid rgba(30, 24, 18, 0.12)',
+          boxShadow: '0 10px 24px rgba(30, 24, 18, 0.16)',
         }}
       >
         <AnimatePresence mode="popLayout">
@@ -34,7 +34,7 @@ function FlipNumber({ value, label }: { value: number; label: string }) {
           </motion.span>
         </AnimatePresence>
       </div>
-      <span className="text-[10px] font-medium text-white/50 uppercase tracking-widest font-sans">
+      <span className="text-[10px] font-semibold text-text-muted uppercase tracking-widest font-sans">
         {label}
       </span>
     </div>
@@ -77,10 +77,10 @@ export default function CountdownTimer() {
       <div className="flex items-center gap-3 justify-center">
         {['Jours', 'Heures', 'Min', 'Sec'].map((label) => (
           <div key={label} className="flex flex-col items-center gap-1">
-            <div className="rounded-2xl px-3 py-3 min-w-[62px] flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.2)' }}>
+            <div className="rounded-2xl px-3 py-3 min-w-[62px] flex items-center justify-center" style={{ background: 'rgba(30, 24, 18, 0.92)', border: '1px solid rgba(30, 24, 18, 0.12)' }}>
               <span className="text-2xl font-semibold text-white tabular-nums font-sans">00</span>
             </div>
-            <span className="text-[10px] font-medium text-white/50 uppercase tracking-widest font-sans">{label}</span>
+            <span className="text-[10px] font-semibold text-text-muted uppercase tracking-widest font-sans">{label}</span>
           </div>
         ))}
       </div>
@@ -93,7 +93,7 @@ export default function CountdownTimer() {
         <div key={unit.label} className="flex items-start gap-2.5">
           <FlipNumber value={unit.value} label={unit.label} />
           {i < timeLeft.length - 1 && (
-            <span className="text-xl font-light text-white/40 mt-2.5">:</span>
+            <span className="text-xl font-light text-text-muted mt-2.5">:</span>
           )}
         </div>
       ))}

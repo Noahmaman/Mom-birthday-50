@@ -119,7 +119,7 @@ export default function VideoPage() {
     try {
       setError(null)
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user', width: { ideal: 720 }, height: { ideal: 1280 } },
+        video: { facingMode: 'user' },
         audio: true,
       })
       streamRef.current = stream
@@ -369,7 +369,7 @@ export default function VideoPage() {
         {step === 'record' && (
           <motion.div key="record" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="space-y-4">
             <div className="relative rounded-3xl overflow-hidden bg-black aspect-[9/16] max-h-[70vh] mx-auto card-shadow">
-              <video ref={attachCameraPreview} autoPlay muted playsInline className="w-full h-full object-cover" style={{ transform: 'scaleX(-1)' }} />
+              <video ref={attachCameraPreview} autoPlay muted playsInline className="w-full h-full object-contain" style={{ transform: 'scaleX(-1)' }} />
               <canvas ref={canvasRef} className="hidden" aria-hidden />
               <div className="absolute inset-x-0 bottom-0 px-5 pb-6 pt-16 bg-gradient-to-t from-black/70 to-transparent pointer-events-none">
                 <p className="text-white text-center text-2xl font-semibold font-sans drop-shadow-lg">
@@ -430,7 +430,7 @@ export default function VideoPage() {
         {step === 'preview' && videoUrl && (
           <motion.div key="preview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-4">
             <div className="relative rounded-3xl overflow-hidden bg-black aspect-[9/16] max-h-[70vh] mx-auto card-shadow">
-              <video ref={previewRef} src={videoUrl} controls playsInline className="w-full h-full object-cover" />
+              <video ref={previewRef} src={videoUrl} controls playsInline className="w-full h-full object-contain" />
               {videoBlob?.type && (
                 <div className="absolute left-3 top-3 rounded-full bg-black/55 px-3 py-1.5 backdrop-blur-sm pointer-events-none">
                   <span className="text-white text-xs font-semibold font-sans">{authorName.trim()}</span>
