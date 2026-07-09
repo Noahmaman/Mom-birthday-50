@@ -1,11 +1,13 @@
 'use client'
 
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { CalendarCheck, Clapperboard, Headphones, PenLine, Sparkles } from 'lucide-react'
 import Image from 'next/image'
 import CountdownTimer from '@/components/CountdownTimer'
 import FeatureCard from '@/components/FeatureCard'
 import LoadingScreen from '@/components/LoadingScreen'
+import QuickRsvpModal from '@/components/QuickRsvpModal'
 
 const cards = [
   {
@@ -66,9 +68,12 @@ const memories = [
 ]
 
 export default function HomePage() {
+  const [quickRsvpOpen, setQuickRsvpOpen] = useState(false)
+
   return (
     <>
       <LoadingScreen />
+      <QuickRsvpModal open={quickRsvpOpen} onClose={() => setQuickRsvpOpen(false)} />
 
       <div className="min-h-screen px-5 pt-12 pb-4">
         {/* Hero */}
@@ -79,7 +84,7 @@ export default function HomePage() {
           className="relative rounded-4xl overflow-hidden mb-7 min-h-[560px] flex items-end card-shadow"
         >
           <Image
-            src="/memories/maman-wide.jpg"
+            src="/cover-anniversaire.jpg"
             alt="Maman entourée de souvenirs"
             fill
             priority
@@ -153,6 +158,18 @@ export default function HomePage() {
                 Compte à rebours
               </p>
               <CountdownTimer />
+              <motion.button
+                whileTap={{ scale: 0.96 }}
+                whileHover={{ y: -1 }}
+                onClick={() => setQuickRsvpOpen(true)}
+                className="mt-5 inline-flex h-14 items-center justify-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-text-dark shadow-card font-sans"
+              >
+                <CalendarCheck size={17} className="text-primary" />
+                RSVP facile
+              </motion.button>
+              <p className="mt-2 text-[11px] text-white/45 font-sans">
+                10 secondes, c&apos;est enregistré.
+              </p>
             </motion.div>
 
             {/* Quote */}
