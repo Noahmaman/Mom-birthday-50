@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, Clapperboard, Upload, Circle, Square, Check, RotateCcw, Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -32,18 +32,37 @@ export default function VideoPage() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  const attachCameraPreview = useCallback((element: HTMLVideoElement | null) => {
+    videoRef.current = element
+    if (!element || !streamRef.current) return
+
+    element.srcObject = streamRef.current
+    element.play().catch(() => {
+      setError("La caméra est prête, mais l'aperçu n'a pas pu démarrer automatiquement.")
+    })
+  }, [])
+
   const startCamera = useCallback(async () => {
     try {
+      setError(null)
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'user', width: { ideal: 720 }, height: { ideal: 1280 } },
         audio: true,
       })
       streamRef.current = stream
-      if (videoRef.current) videoRef.current.srcObject = stream
       setStep('record')
+      if (videoRef.current) attachCameraPreview(videoRef.current)
     } catch {
       setError("Impossible d'accéder à la caméra. Veuillez autoriser l'accès.")
     }
+  }, [attachCameraPreview])
+
+  const stopRecording = useCallback(() => {
+    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null }
+    if (mediaRecorderRef.current?.state !== 'inactive') mediaRecorderRef.current?.stop()
+    if (streamRef.current) { streamRef.current.getTracks().forEach((t) => t.stop()); streamRef.current = null }
+    if (videoRef.current) videoRef.current.srcObject = null
+    setRecording(false)
   }, [])
 
   const startRecording = useCallback(() => {
@@ -78,14 +97,15 @@ export default function VideoPage() {
         return t + 1
       })
     }, 1000)
-  }, [])
+  }, [stopRecording])
 
-  const stopRecording = useCallback(() => {
-    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null }
-    if (mediaRecorderRef.current?.state !== 'inactive') mediaRecorderRef.current?.stop()
-    if (streamRef.current) { streamRef.current.getTracks().forEach((t) => t.stop()); streamRef.current = null }
-    setRecording(false)
-  }, [])
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current)
+      if (streamRef.current) streamRef.current.getTracks().forEach((track) => track.stop())
+      if (videoUrl) URL.revokeObjectURL(videoUrl)
+    }
+  }, [videoUrl])
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -258,7 +278,7 @@ export default function VideoPage() {
         {step === 'record' && (
           <motion.div key="record" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="space-y-4">
             <div className="relative rounded-3xl overflow-hidden bg-black aspect-[9/16] max-h-[70vh] mx-auto card-shadow">
-              <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover" style={{ transform: 'scaleX(-1)' }} />
+              <video ref={attachCameraPreview} autoPlay muted playsInline className="w-full h-full object-cover" style={{ transform: 'scaleX(-1)' }} />
               {recording && (
                 <div className="absolute top-4 left-4 flex items-center gap-2 bg-black/60 rounded-full px-3 py-1.5">
                   <motion.div
