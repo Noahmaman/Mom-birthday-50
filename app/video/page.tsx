@@ -15,36 +15,36 @@ const MAX_DURATION = 90
 const cartoonFont = '"Comic Sans MS", "Comic Sans", "Chalkboard SE", "Marker Felt", cursive'
 
 const kissOptions = [
-  'Bisous',
-  'Gros bisous',
-  'Mille bisous',
-  'Bisous doux',
-  'Bisous tendres',
-  'Bisous d’amour',
-  'Plein de bisous',
-  'Énormes bisous',
-  'Bisous câlins',
-  'Bisous soleil',
-  'Bisous sucrés',
-  'Bisous magiques',
-  'Bisous de loin',
-  'Bisous du cœur',
-  'Bisous infinis',
-  'Bisous joyeux',
-  'Bisous étoilés',
-  'Bisous pétillants',
-  'Bisous fleuris',
-  'Bisous dorés',
-  'Bisous chaleureux',
-  'Bisous Yael',
-  'Bisous famille',
-  'Bisous bonheur',
-  'Bisous surprise',
-  'Bisous de fête',
-  'Bisous éternels',
-  'Bisous lumineux',
-  'Bisous tout doux',
-  'Je t’embrasse fort',
+  { language: 'Français', text: 'Bisous' },
+  { language: 'Anglais', text: 'Kisses' },
+  { language: 'Espagnol', text: 'Besos' },
+  { language: 'Italien', text: 'Baci' },
+  { language: 'Portugais', text: 'Beijos' },
+  { language: 'Allemand', text: 'Küsse' },
+  { language: 'Néerlandais', text: 'Kusjes' },
+  { language: 'Hébreu', text: 'Neshikot' },
+  { language: 'Arabe', text: 'Qoblat' },
+  { language: 'Russe', text: 'Potselui' },
+  { language: 'Polonais', text: 'Buziaki' },
+  { language: 'Grec', text: 'Filakia' },
+  { language: 'Turc', text: 'Öpücükler' },
+  { language: 'Japonais', text: 'Kisu' },
+  { language: 'Coréen', text: 'Kiseu' },
+  { language: 'Chinois', text: 'Qīn qīn' },
+  { language: 'Hindi', text: 'Chumban' },
+  { language: 'Suédois', text: 'Pussar' },
+  { language: 'Danois', text: 'Kys' },
+  { language: 'Norvégien', text: 'Kyss' },
+  { language: 'Finnois', text: 'Suukkoja' },
+  { language: 'Roumain', text: 'Pupici' },
+  { language: 'Hongrois', text: 'Puszik' },
+  { language: 'Tchèque', text: 'Pusinky' },
+  { language: 'Croate', text: 'Puse' },
+  { language: 'Serbe', text: 'Poljupci' },
+  { language: 'Indonésien', text: 'Ciuman' },
+  { language: 'Swahili', text: 'Mabusu' },
+  { language: 'Thaï', text: 'Jup jup' },
+  { language: 'Vietnamien', text: 'Những nụ hôn' },
 ]
 
 export default function VideoPage() {
@@ -373,7 +373,7 @@ export default function VideoPage() {
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="mb-5">
         <div className="mb-2 flex items-end justify-between gap-3">
           <div>
-            <p className="text-sm font-medium text-text-dark font-sans">30 manières de dire bisous</p>
+            <p className="text-sm font-medium text-text-dark font-sans">Bisous dans 30 langues</p>
             <p className="text-xs text-text-muted font-sans">Optionnel, affiché sur votre vidéo.</p>
           </div>
           {selectedKiss && (
@@ -384,16 +384,19 @@ export default function VideoPage() {
         </div>
         <div className="flex max-h-32 flex-wrap gap-2 overflow-y-auto rounded-3xl bg-[#F6F1EB] p-3 no-scrollbar">
           {kissOptions.map((kiss) => {
-            const selected = selectedKiss === kiss
+            const selected = selectedKiss === kiss.text
             return (
               <button
-                key={kiss}
-                onClick={() => setSelectedKiss(selected ? null : kiss)}
-                className={`rounded-full px-3 py-2 text-xs font-semibold transition font-sans ${
+                key={kiss.language}
+                onClick={() => setSelectedKiss(selected ? null : kiss.text)}
+                className={`rounded-2xl px-3 py-2 text-left text-xs font-semibold transition font-sans ${
                   selected ? 'bg-text-dark text-white' : 'bg-white text-text-dark'
                 }`}
               >
-                {kiss}
+                <span className="block">{kiss.text}</span>
+                <span className={`block text-[10px] ${selected ? 'text-white/65' : 'text-text-muted'}`}>
+                  {kiss.language}
+                </span>
               </button>
             )
           })}
