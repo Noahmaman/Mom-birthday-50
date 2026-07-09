@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Lock, Eye, EyeOff } from 'lucide-react'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -26,7 +27,7 @@ export default function AdminPage() {
     // Simulate a slight delay for UX
     await new Promise((resolve) => setTimeout(resolve, 600))
 
-    const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'admin2026'
+    const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'Noah'
     if (password === adminPassword) {
       sessionStorage.setItem('admin-auth', 'true')
       router.push('/admin/dashboard')
@@ -49,10 +50,27 @@ export default function AdminPage() {
         className="w-full max-w-sm"
       >
         {/* Card */}
-        <div
-          className="glass-card rounded-4xl p-8 card-shadow"
-          style={{ background: 'rgba(255,255,255,0.9)' }}
-        >
+        <div className="glass-card rounded-4xl overflow-hidden card-shadow bg-white/90">
+          <div className="relative h-44">
+            <Image
+              src="/cover-anniversaire.jpg"
+              alt="Cover anniversaire de Maman"
+              fill
+              priority
+              sizes="(max-width: 768px) 100vw, 384px"
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/20 to-black/70" />
+            <div className="absolute inset-x-0 bottom-0 p-5">
+              <p className="text-white/75 text-xs font-semibold uppercase tracking-widest">
+                30 Août 2026
+              </p>
+              <h1 className="text-white text-3xl font-light mt-1 font-display">
+                Anniversaire Maman
+              </h1>
+            </div>
+          </div>
+          <div className="p-8">
           {/* Icon */}
           <motion.div
             initial={{ scale: 0 }}
@@ -71,9 +89,9 @@ export default function AdminPage() {
             transition={{ delay: 0.3 }}
             className="text-center mb-8"
           >
-            <h1 className="text-2xl font-bold text-text-dark">Espace Admin</h1>
+            <h2 className="text-2xl font-bold text-text-dark">Espace Admin</h2>
             <p className="text-text-muted text-sm mt-1">
-              Maman ❤️ — Tableau de bord
+              Toutes les réponses, vidéos et messages
             </p>
           </motion.div>
 
@@ -131,6 +149,7 @@ export default function AdminPage() {
               )}
             </Button>
           </motion.div>
+          </div>
         </div>
 
         <motion.p

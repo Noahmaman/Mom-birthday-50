@@ -26,11 +26,20 @@ export default function VideoPage() {
 
   const videoRef = useRef<HTMLVideoElement>(null)
   const previewRef = useRef<HTMLVideoElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const chunksRef = useRef<Blob[]>([])
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const animationRef = useRef<number | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const stopCanvasRendering = useCallback(() => {
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current)
+      animationRef.current = null
+    }
+  }, [])
 
   const attachCameraPreview = useCallback((element: HTMLVideoElement | null) => {
     videoRef.current = element
@@ -41,6 +50,70 @@ export default function VideoPage() {
       setError("La caméra est prête, mais l'aperçu n'a pas pu démarrer automatiquement.")
     })
   }, [])
+
+  const drawCameraFrame = useCallback(() => {
+    const video = videoRef.current
+    const canvas = canvasRef.current
+    const context = canvas?.getContext('2d')
+
+    if (!video || !canvas || !context) return
+    if (video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
+      animationRef.current = requestAnimationFrame(drawCameraFrame)
+      return
+    }
+
+    const width = video.videoWidth || 720
+    const height = video.videoHeight || 1280
+
+    if (canvas.width !== width || canvas.height !== height) {
+      canvas.width = width
+      canvas.height = height
+    }
+
+    context.save()
+    context.translate(width, 0)
+    context.scale(-1, 1)
+    context.drawImage(video, 0, 0, width, height)
+    context.restore()
+
+    const gradientHeight = Math.max(170, height * 0.18)
+    const gradient = context.createLinearGradient(0, height - gradientHeight, 0, height)
+    gradient.addColorStop(0, 'rgba(30, 24, 18, 0)')
+    gradient.addColorStop(1, 'rgba(30, 24, 18, 0.82)')
+    context.fillStyle = gradient
+    context.fillRect(0, height - gradientHeight, width, gradientHeight)
+
+    const safeName = authorName.trim() || 'Pour Maman'
+    const fontSize = Math.max(34, Math.round(width * 0.065))
+    context.font = `600 ${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`
+    context.textAlign = 'center'
+    context.textBaseline = 'middle'
+    context.fillStyle = 'rgba(255, 255, 255, 0.96)'
+    context.shadowColor = 'rgba(0, 0, 0, 0.45)'
+    context.shadowBlur = 18
+    context.fillText(safeName, width / 2, height - Math.max(86, height * 0.085))
+
+    context.shadowBlur = 0
+    context.font = `500 ${Math.max(18, Math.round(width * 0.032))}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`
+    context.fillStyle = 'rgba(255, 255, 255, 0.74)'
+    context.fillText('Un message pour Maman', width / 2, height - Math.max(42, height * 0.04))
+
+    animationRef.current = requestAnimationFrame(drawCameraFrame)
+  }, [authorName])
+
+  const getRecorderMimeType = () => {
+    if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')) return 'video/webm;codecs=vp9,opus'
+    if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')) return 'video/webm;codecs=vp8,opus'
+    if (MediaRecorder.isTypeSupported('video/webm')) return 'video/webm'
+    if (MediaRecorder.isTypeSupported('video/mp4')) return 'video/mp4'
+    return ''
+  }
+
+  const getVideoExtension = (type: string) => {
+    if (type.includes('mp4')) return 'mp4'
+    if (type.includes('quicktime')) return 'mov'
+    return 'webm'
+  }
 
   const startCamera = useCallback(async () => {
     try {
@@ -59,27 +132,43 @@ export default function VideoPage() {
 
   const stopRecording = useCallback(() => {
     if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null }
+    stopCanvasRendering()
     if (mediaRecorderRef.current?.state !== 'inactive') mediaRecorderRef.current?.stop()
     if (streamRef.current) { streamRef.current.getTracks().forEach((t) => t.stop()); streamRef.current = null }
     if (videoRef.current) videoRef.current.srcObject = null
     setRecording(false)
-  }, [])
+  }, [stopCanvasRendering])
 
   const startRecording = useCallback(() => {
     if (!streamRef.current) return
-    chunksRef.current = []
-    const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
-      ? 'video/webm;codecs=vp9'
-      : MediaRecorder.isTypeSupported('video/webm')
-      ? 'video/webm'
-      : 'video/mp4'
+    if (!authorName.trim()) {
+      setError('Veuillez entrer votre prénom avant de filmer.')
+      return
+    }
+    const canvas = canvasRef.current
+    const video = videoRef.current
+    if (!canvas || !video) {
+      setError("L'aperçu caméra n'est pas encore prêt.")
+      return
+    }
 
-    const recorder = new MediaRecorder(streamRef.current, { mimeType })
+    setError(null)
+    chunksRef.current = []
+    drawCameraFrame()
+
+    const canvasStream = canvas.captureStream(30)
+    streamRef.current.getAudioTracks().forEach((track) => canvasStream.addTrack(track))
+    const mimeType = getRecorderMimeType()
+
+    const recorder = mimeType
+      ? new MediaRecorder(canvasStream, { mimeType })
+      : new MediaRecorder(canvasStream)
     mediaRecorderRef.current = recorder
 
     recorder.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data) }
     recorder.onstop = () => {
-      const blob = new Blob(chunksRef.current, { type: mimeType })
+      stopCanvasRendering()
+      const blob = new Blob(chunksRef.current, { type: recorder.mimeType || mimeType || 'video/webm' })
       setVideoBlob(blob)
       const url = URL.createObjectURL(blob)
       setVideoUrl(url)
@@ -97,15 +186,16 @@ export default function VideoPage() {
         return t + 1
       })
     }, 1000)
-  }, [stopRecording])
+  }, [authorName, drawCameraFrame, stopCanvasRendering, stopRecording])
 
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current)
+      stopCanvasRendering()
       if (streamRef.current) streamRef.current.getTracks().forEach((track) => track.stop())
       if (videoUrl) URL.revokeObjectURL(videoUrl)
     }
-  }, [videoUrl])
+  }, [stopCanvasRendering, videoUrl])
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -125,7 +215,8 @@ export default function VideoPage() {
     setUploadProgress(0)
 
     try {
-      const fileName = `${Date.now()}-${authorName.replace(/\s+/g, '-')}.webm`
+      const cleanName = authorName.trim().replace(/[^\w-]+/g, '-').replace(/-+/g, '-')
+      const fileName = `${Date.now()}-${cleanName}.${getVideoExtension(videoBlob.type)}`
       const { error: uploadError } = await supabase.storage
         .from('videos')
         .upload(fileName, videoBlob, { contentType: videoBlob.type || 'video/webm', upsert: false })
@@ -279,6 +370,15 @@ export default function VideoPage() {
           <motion.div key="record" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="space-y-4">
             <div className="relative rounded-3xl overflow-hidden bg-black aspect-[9/16] max-h-[70vh] mx-auto card-shadow">
               <video ref={attachCameraPreview} autoPlay muted playsInline className="w-full h-full object-cover" style={{ transform: 'scaleX(-1)' }} />
+              <canvas ref={canvasRef} className="hidden" aria-hidden />
+              <div className="absolute inset-x-0 bottom-0 px-5 pb-6 pt-16 bg-gradient-to-t from-black/70 to-transparent pointer-events-none">
+                <p className="text-white text-center text-2xl font-semibold font-sans drop-shadow-lg">
+                  {authorName.trim() || 'Votre prénom'}
+                </p>
+                <p className="text-white/70 text-center text-xs font-medium uppercase tracking-widest font-sans mt-1">
+                  Un message pour Maman
+                </p>
+              </div>
               {recording && (
                 <div className="absolute top-4 left-4 flex items-center gap-2 bg-black/60 rounded-full px-3 py-1.5">
                   <motion.div
@@ -303,8 +403,9 @@ export default function VideoPage() {
                 <motion.button
                   whileTap={{ scale: 0.9 }}
                   onClick={startRecording}
-                  className="w-16 h-16 rounded-full flex items-center justify-center"
+                  className="w-16 h-16 rounded-full flex items-center justify-center disabled:opacity-50"
                   style={{ background: 'linear-gradient(135deg, #B87A6A 0%, #9A5E4E 100%)' }}
+                  disabled={!authorName.trim()}
                 >
                   <Circle size={30} className="text-white" fill="white" />
                 </motion.button>
@@ -322,13 +423,19 @@ export default function VideoPage() {
             <p className="text-center text-text-muted text-sm font-sans">
               {recording ? `Enregistrement en cours · ${MAX_DURATION - recordingTime}s restantes` : 'Appuyez pour démarrer'}
             </p>
+            {error && <p className="text-red-500 text-sm font-medium px-1 text-center font-sans">{error}</p>}
           </motion.div>
         )}
 
         {step === 'preview' && videoUrl && (
           <motion.div key="preview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-4">
-            <div className="rounded-3xl overflow-hidden bg-black aspect-[9/16] max-h-[70vh] mx-auto card-shadow">
+            <div className="relative rounded-3xl overflow-hidden bg-black aspect-[9/16] max-h-[70vh] mx-auto card-shadow">
               <video ref={previewRef} src={videoUrl} controls playsInline className="w-full h-full object-cover" />
+              {videoBlob?.type && (
+                <div className="absolute left-3 top-3 rounded-full bg-black/55 px-3 py-1.5 backdrop-blur-sm pointer-events-none">
+                  <span className="text-white text-xs font-semibold font-sans">{authorName.trim()}</span>
+                </div>
+              )}
             </div>
 
             <div className="glass-card rounded-2xl p-4 card-shadow flex items-center gap-3">

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
-import { LogOut, Users, Video, Mail, Music, Trash2, ExternalLink, Play } from 'lucide-react'
+import { Download, ExternalLink, LogOut, Mail, Music, Play, RefreshCw, Trash2, Users, Video } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import type { Rsvp, Message, Video as VideoType, PlaylistItem } from '@/lib/supabase'
@@ -119,41 +119,56 @@ function VideoCard({ video, onDelete }: { video: VideoType; onDelete: (id: strin
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="glass-card rounded-2xl p-4 card-shadow"
+      className="glass-card rounded-3xl overflow-hidden card-shadow"
       style={{ background: 'linear-gradient(135deg, #EDE4F9 0%, #FFFFFF 100%)' }}
     >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3 flex-1">
-          <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-            style={{ background: 'linear-gradient(135deg, #C9A7E8 0%, #F4A7B9 100%)' }}
-          >
-            <Video size={20} className="text-white" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="font-semibold text-text-dark truncate">{video.author_name}</p>
-            <p className="text-text-muted text-xs">{formatDate(video.created_at)}</p>
-          </div>
+      <div className="relative bg-black aspect-video">
+        <video src={video.url} controls playsInline preload="metadata" className="h-full w-full object-contain" />
+        <div className="absolute left-3 top-3 rounded-full bg-black/55 px-3 py-1.5 backdrop-blur-sm">
+          <span className="text-white text-xs font-semibold">{video.author_name}</span>
         </div>
-        <div className="flex gap-2">
-          <button
-            onClick={() => window.open(video.url, '_blank')}
-            className="w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center"
-          >
-            <Play size={14} className="text-purple-500" />
-          </button>
-          <a
-            href={video.url}
-            download
-            className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center"
-          >
-            <ExternalLink size={14} className="text-blue-400" />
-          </a>
-          <button
-            onClick={() => onDelete(video.id)}
-            className="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center"
-          >
-            <Trash2 size={14} className="text-red-400" />
-          </button>
+      </div>
+
+      <div className="p-4">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ background: 'linear-gradient(135deg, #C9A7E8 0%, #F4A7B9 100%)' }}
+              >
+                <Video size={17} className="text-white" />
+              </div>
+              <div className="min-w-0">
+                <p className="font-semibold text-text-dark truncate">{video.author_name}</p>
+                <p className="text-text-muted text-xs">{formatDate(video.created_at)}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex gap-2">
+            <button
+              onClick={() => window.open(video.url, '_blank')}
+              className="w-9 h-9 rounded-full bg-purple-50 flex items-center justify-center"
+              aria-label="Ouvrir la vidéo"
+            >
+              <Play size={14} className="text-purple-500" />
+            </button>
+            <a
+              href={video.url}
+              download
+              className="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center"
+              aria-label="Télécharger la vidéo"
+            >
+              <Download size={14} className="text-blue-500" />
+            </a>
+            <button
+              onClick={() => onDelete(video.id)}
+              className="w-9 h-9 rounded-full bg-red-50 flex items-center justify-center"
+              aria-label="Supprimer la vidéo"
+            >
+              <Trash2 size={14} className="text-red-400" />
+            </button>
+          </div>
         </div>
       </div>
     </motion.div>
@@ -295,22 +310,36 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen px-4 pt-14 pb-8">
-      {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between mb-6"
+        className="relative rounded-4xl overflow-hidden mb-6 card-shadow min-h-52"
       >
-        <div>
-          <h1 className="text-2xl font-bold text-text-dark">Dashboard</h1>
-          <p className="text-text-muted text-sm">Maman ❤️ — 30 Août 2026</p>
+        <Image
+          src="/cover-anniversaire.jpg"
+          alt="Cover anniversaire"
+          fill
+          priority
+          sizes="(max-width: 768px) 100vw, 720px"
+          className="object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/18 via-black/25 to-[#1E1812]/82" />
+        <div className="relative z-10 p-5 min-h-52 flex flex-col justify-between">
+          <div className="flex justify-end">
+            <button
+              onClick={handleLogout}
+              className="w-10 h-10 bg-white/18 backdrop-blur-md rounded-full flex items-center justify-center"
+              aria-label="Se déconnecter"
+            >
+              <LogOut size={18} className="text-white" />
+            </button>
+          </div>
+          <div>
+            <p className="text-white/75 text-xs font-semibold uppercase tracking-widest">Admin privé</p>
+            <h1 className="text-4xl font-light text-white font-display mt-1">Toutes les datas</h1>
+            <p className="text-white/70 text-sm mt-1">RSVP, vidéos, messages et playlist</p>
+          </div>
         </div>
-        <button
-          onClick={handleLogout}
-          className="w-10 h-10 glass-card rounded-full flex items-center justify-center card-shadow"
-        >
-          <LogOut size={18} className="text-text-muted" />
-        </button>
       </motion.div>
 
       {/* Stats grid */}
@@ -484,6 +513,7 @@ export default function DashboardPage() {
         className="mt-6 text-center"
       >
         <Button variant="secondary" size="sm" onClick={fetchAll}>
+          <RefreshCw size={14} className="mr-2" />
           Actualiser les données
         </Button>
       </motion.div>

@@ -3,6 +3,7 @@ import "./globals.css";
 import BottomNav from "@/components/BottomNav";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://mom-birthday-50.vercel.app"),
   title: "Maman",
   description: "Célébrons ensemble ce jour spécial — 30 août 2026",
   manifest: "/manifest.json",
@@ -15,6 +16,7 @@ export const metadata: Metadata = {
     title: "Maman",
     description: "Célébrons ensemble ce jour spécial — 30 août 2026",
     type: "website",
+    images: [{ url: "/cover-anniversaire.jpg", width: 1457, height: 1080, alt: "Anniversaire de Maman" }],
   },
   icons: {
     icon: "/favicon-birthday.svg",
