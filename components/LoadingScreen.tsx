@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Heart } from 'lucide-react'
+import Image from 'next/image'
 
 export default function LoadingScreen() {
   const [show, setShow] = useState(false)
@@ -25,45 +25,29 @@ export default function LoadingScreen() {
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, scale: 1.04 }}
           transition={{ duration: 0.7, ease: 'easeInOut' }}
-          className="fixed inset-0 z-[9999] flex flex-col items-center justify-center"
-          style={{ background: 'linear-gradient(160deg, #1E1812 0%, #4A2E24 55%, #B87A6A 100%)' }}
+          className="fixed inset-0 z-[9999] flex flex-col items-center justify-end overflow-hidden bg-[#1E1812]"
         >
-          {/* Subtle background texture */}
-          <div className="absolute inset-0 overflow-hidden">
-            {[...Array(4)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute rounded-full bg-white/5"
-                style={{
-                  width: 120 + i * 60,
-                  height: 120 + i * 60,
-                  left: `${[10, 70, 20, 60][i]}%`,
-                  top: `${[20, 10, 65, 60][i]}%`,
-                }}
-                animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.5, 0.3] }}
-                transition={{ duration: 3 + i, repeat: Infinity, delay: i * 0.5 }}
-              />
-            ))}
-          </div>
+          <Image
+            src="/covers/cover-4.png"
+            alt="Cover d'accueil anniversaire"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/8 to-[#1E1812]/82" />
 
-          <div className="relative z-10 flex flex-col items-center gap-7">
-            {/* Animated Heart icon */}
-            <motion.div
-              animate={{ scale: [1, 1.18, 1, 1.12, 1] }}
-              transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-              className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center"
-            >
-              <Heart size={32} className="text-white" fill="rgba(255,255,255,0.9)" strokeWidth={1.5} />
-            </motion.div>
-
-            {/* Title */}
+          <div className="relative z-10 flex w-full flex-col items-center gap-5 px-8 pb-16">
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.6 }}
               className="text-center"
             >
-              <h1 className="text-4xl font-light text-white tracking-tight font-display">
+              <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-white/65 font-sans">
+                30 Août 2026
+              </p>
+              <h1 className="text-5xl font-light text-white tracking-tight font-display">
                 Maman
               </h1>
               <motion.div
@@ -76,9 +60,9 @@ export default function LoadingScreen() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.9, duration: 0.5 }}
-                className="text-white/50 text-sm mt-3 font-light font-sans tracking-wide"
+                className="text-white/72 text-sm mt-3 font-light font-sans tracking-wide"
               >
-                30 Août 2026
+                La fête se prépare...
               </motion.p>
             </motion.div>
 
