@@ -15,39 +15,6 @@ const options: { value: AttendingOption; label: string; Icon: typeof Check; colo
   { value: 'no', label: 'Non', Icon: X, color: '#B87A6A' },
 ]
 
-const kissOptions = [
-  'Bisous',
-  'Gros bisous',
-  'Mille bisous',
-  'Bisous doux',
-  'Bisous tendres',
-  'Bisous d’amour',
-  'Plein de bisous',
-  'Énormes bisous',
-  'Bisous câlins',
-  'Bisous soleil',
-  'Bisous sucrés',
-  'Bisous magiques',
-  'Bisous de loin',
-  'Bisous du cœur',
-  'Bisous infinis',
-  'Bisous joyeux',
-  'Bisous étoilés',
-  'Bisous pétillants',
-  'Bisous fleuris',
-  'Bisous dorés',
-  'Bisous chaleureux',
-  'Bisous Yael',
-  'Bisous famille',
-  'Bisous bonheur',
-  'Bisous surprise',
-  'Bisous de fête',
-  'Bisous éternels',
-  'Bisous lumineux',
-  'Bisous tout doux',
-  'Je t’embrasse fort',
-]
-
 export default function QuickRsvpModal({
   open,
   onClose,
@@ -59,7 +26,6 @@ export default function QuickRsvpModal({
   const [guestsCount, setGuestsCount] = useState(1)
   const [attending, setAttending] = useState<AttendingOption>('yes')
   const [foodPreferences, setFoodPreferences] = useState('')
-  const [selectedKiss, setSelectedKiss] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -67,7 +33,6 @@ export default function QuickRsvpModal({
   const resetAndClose = () => {
     setSuccess(false)
     setError(null)
-    setSelectedKiss(null)
     onClose()
   }
 
@@ -89,10 +54,7 @@ export default function QuickRsvpModal({
           guests_count: guestsCount,
           attending,
           allergies: foodPreferences.trim(),
-          comment: [
-            'RSVP express depuis l’accueil',
-            selectedKiss ? `Bisous choisi: ${selectedKiss}` : null,
-          ].filter(Boolean).join(' · '),
+          comment: 'RSVP express depuis l’accueil',
         }),
       })
 
@@ -229,45 +191,6 @@ export default function QuickRsvpModal({
                     rows={3}
                     className="bg-white/80"
                   />
-                </div>
-
-                <div>
-                  <div className="mb-2 flex items-end justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-medium text-text-dark font-sans">
-                        30 manières de dire bisous
-                      </p>
-                      <p className="text-xs text-text-muted font-sans">
-                        Choisissez-en une, rien n’est sélectionné par défaut.
-                      </p>
-                    </div>
-                    {selectedKiss && (
-                      <button
-                        onClick={() => setSelectedKiss(null)}
-                        className="text-xs font-semibold text-primary font-sans"
-                      >
-                        Effacer
-                      </button>
-                    )}
-                  </div>
-                  <div className="flex max-h-36 flex-wrap gap-2 overflow-y-auto rounded-3xl bg-[#F6F1EB] p-3 no-scrollbar">
-                    {kissOptions.map((kiss) => {
-                      const selected = selectedKiss === kiss
-                      return (
-                        <button
-                          key={kiss}
-                          onClick={() => setSelectedKiss(selected ? null : kiss)}
-                          className={`rounded-full px-3 py-2 text-xs font-semibold transition font-sans ${
-                            selected
-                              ? 'bg-text-dark text-white'
-                              : 'bg-white text-text-dark'
-                          }`}
-                        >
-                          {kiss}
-                        </button>
-                      )
-                    })}
-                  </div>
                 </div>
 
                 {error && (

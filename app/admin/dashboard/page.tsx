@@ -3,7 +3,24 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
-import { Download, ExternalLink, LogOut, Mail, Music, Play, RefreshCw, Trash2, Users, Video } from 'lucide-react'
+import {
+  CheckCircle2,
+  Download,
+  ExternalLink,
+  ListMusic,
+  LogOut,
+  Mail,
+  MessageCircle,
+  Music,
+  Play,
+  RefreshCw,
+  Trash2,
+  Users,
+  Utensils,
+  UserRound,
+  Video,
+  type LucideIcon,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import type { Rsvp, Message, Video as VideoType, PlaylistItem } from '@/lib/supabase'
@@ -18,15 +35,17 @@ interface Stats {
   totalSongs: number
 }
 
-function StatCard({ value, label, color, icon }: { value: number; label: string; color: string; icon: string }) {
+function StatCard({ value, label, color, Icon }: { value: number; label: string; color: string; Icon: LucideIcon }) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="glass-card rounded-2xl p-4 card-shadow flex flex-col items-center gap-1"
+      className="glass-card rounded-2xl p-4 card-shadow flex flex-col items-center gap-2"
       style={{ background: color }}
     >
-      <span className="text-2xl">{icon}</span>
+      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/70">
+        <Icon size={18} className="text-text-dark" strokeWidth={1.8} />
+      </div>
       <motion.span
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -63,8 +82,9 @@ function RsvpCard({ rsvp, onDelete }: { rsvp: Rsvp; onDelete: (id: string) => vo
             <span className="text-text-muted text-xs">{formatDate(rsvp.created_at)}</span>
           </div>
           {rsvp.allergies && (
-            <p className="text-text-muted text-xs mt-1.5 italic">
-              🥗 {rsvp.allergies}
+            <p className="text-text-muted text-xs mt-1.5 italic flex items-center gap-1.5">
+              <Utensils size={12} />
+              {rsvp.allergies}
             </p>
           )}
           {rsvp.comment && (
@@ -96,7 +116,7 @@ function MessageCard({ message, onDelete }: { message: Message; onDelete: (id: s
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-text-muted text-lg">💌</span>
+            <Mail size={16} className="text-accent-gold" />
             <span className="font-semibold text-text-dark">{message.author_name}</span>
           </div>
           <p className="text-text-dark text-sm leading-relaxed">{message.content}</p>
@@ -133,10 +153,10 @@ function VideoCard({ video, onDelete }: { video: VideoType; onDelete: (id: strin
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+              <div className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
                 style={{ background: 'linear-gradient(135deg, #C9A7E8 0%, #F4A7B9 100%)' }}
               >
-                <Video size={17} className="text-white" />
+                <Video size={15} className="text-white" />
               </div>
               <div className="min-w-0">
                 <p className="font-semibold text-text-dark truncate">{video.author_name}</p>
@@ -148,25 +168,25 @@ function VideoCard({ video, onDelete }: { video: VideoType; onDelete: (id: strin
           <div className="flex gap-2">
             <button
               onClick={() => window.open(video.url, '_blank')}
-              className="w-9 h-9 rounded-full bg-purple-50 flex items-center justify-center"
+              className="w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center"
               aria-label="Ouvrir la vidéo"
             >
-              <Play size={14} className="text-purple-500" />
+              <Play size={13} className="text-purple-500" />
             </button>
             <a
               href={video.url}
               download
-              className="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center"
+              className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center"
               aria-label="Télécharger la vidéo"
             >
-              <Download size={14} className="text-blue-500" />
+              <Download size={13} className="text-blue-500" />
             </a>
             <button
               onClick={() => onDelete(video.id)}
-              className="w-9 h-9 rounded-full bg-red-50 flex items-center justify-center"
+              className="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center"
               aria-label="Supprimer la vidéo"
             >
-              <Trash2 size={14} className="text-red-400" />
+              <Trash2 size={13} className="text-red-400" />
             </button>
           </div>
         </div>
@@ -309,11 +329,12 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen px-4 pt-14 pb-8">
+    <div className="min-h-screen px-4 pt-14 pb-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl">
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative rounded-4xl overflow-hidden mb-6 card-shadow min-h-52"
+        className="relative rounded-4xl overflow-hidden mb-6 card-shadow min-h-52 lg:min-h-64"
       >
         <Image
           src="/covers/cover-1.jpg"
@@ -324,7 +345,7 @@ export default function DashboardPage() {
           className="object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/18 via-black/25 to-[#1E1812]/82" />
-        <div className="relative z-10 p-5 min-h-52 flex flex-col justify-between">
+        <div className="relative z-10 p-5 min-h-52 flex flex-col justify-between lg:min-h-64 lg:p-7">
           <div className="flex justify-end">
             <button
               onClick={handleLogout}
@@ -336,7 +357,7 @@ export default function DashboardPage() {
           </div>
           <div>
             <p className="text-white/75 text-xs font-semibold uppercase tracking-widest">Admin privé</p>
-            <h1 className="text-4xl font-light text-white font-display mt-1">Toutes les datas</h1>
+            <h1 className="text-4xl font-light text-white font-display mt-1 lg:text-5xl">Toutes les datas</h1>
             <p className="text-white/70 text-sm mt-1">RSVP, vidéos, messages et playlist</p>
           </div>
         </div>
@@ -348,43 +369,43 @@ export default function DashboardPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1 }}
-          className="grid grid-cols-3 gap-3 mb-6"
+          className="grid grid-cols-2 gap-3 mb-6 sm:grid-cols-3 lg:grid-cols-6"
         >
           <StatCard
             value={stats.totalRsvps}
             label="Total RSVP"
             color="linear-gradient(135deg, #FFE4E8 0%, #F9C6D0 100%)"
-            icon="🎉"
+            Icon={Users}
           />
           <StatCard
             value={stats.confirmed}
             label="Confirmés"
             color="linear-gradient(135deg, #E4F9EE 0%, #C6F0DA 100%)"
-            icon="✅"
+            Icon={CheckCircle2}
           />
           <StatCard
             value={stats.totalVideos}
             label="Vidéos"
             color="linear-gradient(135deg, #EDE4F9 0%, #D9C6F0 100%)"
-            icon="🎥"
+            Icon={Video}
           />
           <StatCard
             value={stats.totalMessages}
             label="Messages"
             color="linear-gradient(135deg, #FFF8E4 0%, #FFE4B0 100%)"
-            icon="💌"
+            Icon={MessageCircle}
           />
           <StatCard
             value={stats.totalSongs}
             label="Chansons"
             color="linear-gradient(135deg, #E4F0F9 0%, #C6D9F0 100%)"
-            icon="🎵"
+            Icon={ListMusic}
           />
           <StatCard
             value={rsvps.reduce((acc, r) => acc + (r.guests_count || 1), 0)}
             label="Personnes"
             color="linear-gradient(135deg, #F9E4FF 0%, #ECC6F0 100%)"
-            icon="👥"
+            Icon={UserRound}
           />
         </motion.div>
       )}
@@ -396,24 +417,24 @@ export default function DashboardPage() {
         transition={{ delay: 0.2 }}
       >
         <Tabs defaultValue="rsvps">
-          <TabsList className="w-full grid grid-cols-4">
-            <TabsTrigger value="rsvps">
-              <Users size={15} className="mr-1" />
+          <TabsList className="grid h-auto w-full grid-cols-4 gap-1">
+            <TabsTrigger value="rsvps" className="min-h-11 px-2 text-xs sm:text-sm">
+              <Users size={15} className="mr-1 shrink-0" />
               <span className="hidden sm:inline">Invités</span>
               <span className="sm:hidden">({stats.totalRsvps})</span>
             </TabsTrigger>
-            <TabsTrigger value="videos">
-              <Video size={15} className="mr-1" />
+            <TabsTrigger value="videos" className="min-h-11 px-2 text-xs sm:text-sm">
+              <Video size={15} className="mr-1 shrink-0" />
               <span className="hidden sm:inline">Vidéos</span>
               <span className="sm:hidden">({stats.totalVideos})</span>
             </TabsTrigger>
-            <TabsTrigger value="messages">
-              <Mail size={15} className="mr-1" />
+            <TabsTrigger value="messages" className="min-h-11 px-2 text-xs sm:text-sm">
+              <Mail size={15} className="mr-1 shrink-0" />
               <span className="hidden sm:inline">Messages</span>
               <span className="sm:hidden">({stats.totalMessages})</span>
             </TabsTrigger>
-            <TabsTrigger value="playlist">
-              <Music size={15} className="mr-1" />
+            <TabsTrigger value="playlist" className="min-h-11 px-2 text-xs sm:text-sm">
+              <Music size={15} className="mr-1 shrink-0" />
               <span className="hidden sm:inline">Playlist</span>
               <span className="sm:hidden">({stats.totalSongs})</span>
             </TabsTrigger>
@@ -429,9 +450,9 @@ export default function DashboardPage() {
                   ))}
                 </div>
               ) : rsvps.length === 0 ? (
-                <EmptyState icon="🎉" message="Aucun RSVP pour l'instant" />
+                <EmptyState Icon={Users} message="Aucun RSVP pour l'instant" />
               ) : (
-                <div className="space-y-3">
+                <div className="grid gap-3 lg:grid-cols-2 xl:grid-cols-3">
                   {rsvps.map((rsvp) => (
                     <RsvpCard key={rsvp.id} rsvp={rsvp} onDelete={deleteRsvp} />
                   ))}
@@ -450,9 +471,9 @@ export default function DashboardPage() {
                   ))}
                 </div>
               ) : videos.length === 0 ? (
-                <EmptyState icon="🎥" message="Aucune vidéo pour l'instant" />
+                <EmptyState Icon={Video} message="Aucune vidéo pour l'instant" />
               ) : (
-                <div className="space-y-3">
+                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                   {videos.map((video) => (
                     <VideoCard key={video.id} video={video} onDelete={deleteVideo} />
                   ))}
@@ -471,9 +492,9 @@ export default function DashboardPage() {
                   ))}
                 </div>
               ) : messages.length === 0 ? (
-                <EmptyState icon="💌" message="Aucun message pour l'instant" />
+                <EmptyState Icon={MessageCircle} message="Aucun message pour l'instant" />
               ) : (
-                <div className="space-y-3">
+                <div className="grid gap-3 lg:grid-cols-2 xl:grid-cols-3">
                   {messages.map((msg) => (
                     <MessageCard key={msg.id} message={msg} onDelete={deleteMessage} />
                   ))}
@@ -492,9 +513,9 @@ export default function DashboardPage() {
                   ))}
                 </div>
               ) : songs.length === 0 ? (
-                <EmptyState icon="🎵" message="Aucune chanson pour l'instant" />
+                <EmptyState Icon={ListMusic} message="Aucune chanson pour l'instant" />
               ) : (
-                <div className="space-y-3">
+                <div className="grid gap-3 lg:grid-cols-2 xl:grid-cols-3">
                   {songs.map((song) => (
                     <SongCard key={song.id} song={song} onDelete={deleteSong} />
                   ))}
@@ -504,6 +525,7 @@ export default function DashboardPage() {
           </TabsContent>
         </Tabs>
       </motion.div>
+      </div>
 
       {/* Refresh */}
       <motion.div
@@ -521,14 +543,16 @@ export default function DashboardPage() {
   )
 }
 
-function EmptyState({ icon, message }: { icon: string; message: string }) {
+function EmptyState({ Icon, message }: { Icon: LucideIcon; message: string }) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="text-center py-12"
     >
-      <div className="text-4xl mb-3">{icon}</div>
+      <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/80">
+        <Icon size={26} className="text-text-muted" strokeWidth={1.7} />
+      </div>
       <p className="text-text-muted text-sm">{message}</p>
     </motion.div>
   )

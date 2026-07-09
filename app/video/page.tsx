@@ -12,6 +12,40 @@ import { supabase } from '@/lib/supabase'
 type Step = 'choose' | 'record' | 'upload' | 'preview' | 'submitting' | 'success'
 
 const MAX_DURATION = 90
+const cartoonFont = '"Comic Sans MS", "Comic Sans", "Chalkboard SE", "Marker Felt", cursive'
+
+const kissOptions = [
+  'Bisous',
+  'Gros bisous',
+  'Mille bisous',
+  'Bisous doux',
+  'Bisous tendres',
+  'Bisous d’amour',
+  'Plein de bisous',
+  'Énormes bisous',
+  'Bisous câlins',
+  'Bisous soleil',
+  'Bisous sucrés',
+  'Bisous magiques',
+  'Bisous de loin',
+  'Bisous du cœur',
+  'Bisous infinis',
+  'Bisous joyeux',
+  'Bisous étoilés',
+  'Bisous pétillants',
+  'Bisous fleuris',
+  'Bisous dorés',
+  'Bisous chaleureux',
+  'Bisous Yael',
+  'Bisous famille',
+  'Bisous bonheur',
+  'Bisous surprise',
+  'Bisous de fête',
+  'Bisous éternels',
+  'Bisous lumineux',
+  'Bisous tout doux',
+  'Je t’embrasse fort',
+]
 
 export default function VideoPage() {
   const router = useRouter()
@@ -22,6 +56,7 @@ export default function VideoPage() {
   const [videoBlob, setVideoBlob] = useState<Blob | null>(null)
   const [videoUrl, setVideoUrl] = useState<string | null>(null)
   const [uploadProgress, setUploadProgress] = useState(0)
+  const [selectedKiss, setSelectedKiss] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -84,22 +119,29 @@ export default function VideoPage() {
     context.fillRect(0, height - gradientHeight, width, gradientHeight)
 
     const safeName = authorName.trim() || 'Pour Yael'
+    const kissText = selectedKiss || 'Un message pour Yael'
     const fontSize = Math.max(34, Math.round(width * 0.065))
-    context.font = `600 ${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`
+    context.font = `800 ${fontSize}px ${cartoonFont}`
     context.textAlign = 'center'
     context.textBaseline = 'middle'
     context.fillStyle = 'rgba(255, 255, 255, 0.96)'
     context.shadowColor = 'rgba(0, 0, 0, 0.45)'
     context.shadowBlur = 18
+    context.lineWidth = Math.max(4, Math.round(width * 0.008))
+    context.strokeStyle = 'rgba(30, 24, 18, 0.62)'
+    context.strokeText(safeName, width / 2, height - Math.max(86, height * 0.085))
     context.fillText(safeName, width / 2, height - Math.max(86, height * 0.085))
 
     context.shadowBlur = 0
-    context.font = `500 ${Math.max(18, Math.round(width * 0.032))}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`
-    context.fillStyle = 'rgba(255, 255, 255, 0.74)'
-    context.fillText('Un message pour Yael', width / 2, height - Math.max(42, height * 0.04))
+    context.font = `700 ${Math.max(20, Math.round(width * 0.036))}px ${cartoonFont}`
+    context.fillStyle = 'rgba(255, 238, 170, 0.95)'
+    context.strokeStyle = 'rgba(30, 24, 18, 0.56)'
+    context.lineWidth = Math.max(3, Math.round(width * 0.006))
+    context.strokeText(kissText, width / 2, height - Math.max(42, height * 0.04))
+    context.fillText(kissText, width / 2, height - Math.max(42, height * 0.04))
 
     animationRef.current = requestAnimationFrame(drawCameraFrame)
-  }, [authorName])
+  }, [authorName, selectedKiss])
 
   const getRecorderMimeType = () => {
     if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')) return 'video/webm;codecs=vp9,opus'
@@ -328,6 +370,36 @@ export default function VideoPage() {
         <Input placeholder="Entrez votre prénom" value={authorName} onChange={(e) => setAuthorName(e.target.value)} />
       </motion.div>
 
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="mb-5">
+        <div className="mb-2 flex items-end justify-between gap-3">
+          <div>
+            <p className="text-sm font-medium text-text-dark font-sans">30 manières de dire bisous</p>
+            <p className="text-xs text-text-muted font-sans">Optionnel, affiché sur votre vidéo.</p>
+          </div>
+          {selectedKiss && (
+            <button onClick={() => setSelectedKiss(null)} className="text-xs font-semibold text-primary font-sans">
+              Effacer
+            </button>
+          )}
+        </div>
+        <div className="flex max-h-32 flex-wrap gap-2 overflow-y-auto rounded-3xl bg-[#F6F1EB] p-3 no-scrollbar">
+          {kissOptions.map((kiss) => {
+            const selected = selectedKiss === kiss
+            return (
+              <button
+                key={kiss}
+                onClick={() => setSelectedKiss(selected ? null : kiss)}
+                className={`rounded-full px-3 py-2 text-xs font-semibold transition font-sans ${
+                  selected ? 'bg-text-dark text-white' : 'bg-white text-text-dark'
+                }`}
+              >
+                {kiss}
+              </button>
+            )
+          })}
+        </div>
+      </motion.div>
+
       <AnimatePresence mode="wait">
         {step === 'choose' && (
           <motion.div key="choose" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-4">
@@ -369,14 +441,17 @@ export default function VideoPage() {
         {step === 'record' && (
           <motion.div key="record" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="space-y-4">
             <div className="relative rounded-3xl overflow-hidden bg-black aspect-[3/4] max-h-[68vh] mx-auto card-shadow">
-              <video ref={attachCameraPreview} autoPlay muted playsInline className="w-full h-full object-cover" style={{ transform: 'scaleX(-1)' }} />
+              <video ref={attachCameraPreview} autoPlay muted playsInline className="w-full h-full object-contain" style={{ transform: 'scaleX(-1)' }} />
               <canvas ref={canvasRef} className="hidden" aria-hidden />
               <div className="absolute inset-x-0 bottom-0 px-5 pb-6 pt-16 bg-gradient-to-t from-black/70 to-transparent pointer-events-none">
                 <p className="text-white text-center text-2xl font-semibold font-sans drop-shadow-lg">
                   {authorName.trim() || 'Votre prénom'}
                 </p>
-                <p className="text-white/70 text-center text-xs font-medium uppercase tracking-widest font-sans mt-1">
-                  Un message pour Yael
+                <p
+                  className="text-center text-base font-bold mt-1 drop-shadow-lg"
+                  style={{ color: '#FFEFAA', fontFamily: cartoonFont }}
+                >
+                  {selectedKiss || 'Un message pour Yael'}
                 </p>
               </div>
               {recording && (
@@ -430,10 +505,20 @@ export default function VideoPage() {
         {step === 'preview' && videoUrl && (
           <motion.div key="preview" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-4">
             <div className="relative rounded-3xl overflow-hidden bg-black aspect-[3/4] max-h-[68vh] mx-auto card-shadow">
-              <video ref={previewRef} src={videoUrl} controls playsInline className="w-full h-full object-cover" />
+              <video ref={previewRef} src={videoUrl} controls playsInline className="w-full h-full object-contain" />
               {videoBlob?.type && (
                 <div className="absolute left-3 top-3 rounded-full bg-black/55 px-3 py-1.5 backdrop-blur-sm pointer-events-none">
                   <span className="text-white text-xs font-semibold font-sans">{authorName.trim()}</span>
+                </div>
+              )}
+              {selectedKiss && (
+                <div className="absolute inset-x-0 bottom-3 flex justify-center px-4 pointer-events-none">
+                  <span
+                    className="rounded-full bg-black/55 px-4 py-2 text-sm font-bold backdrop-blur-sm"
+                    style={{ color: '#FFEFAA', fontFamily: cartoonFont }}
+                  >
+                    {selectedKiss}
+                  </span>
                 </div>
               )}
             </div>
