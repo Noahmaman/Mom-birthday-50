@@ -23,6 +23,7 @@ export default function QuickRsvpModal({
   onClose: () => void
 }) {
   const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
   const [guestsCount, setGuestsCount] = useState(1)
   const [attending, setAttending] = useState<AttendingOption>('yes')
   const [foodPreferences, setFoodPreferences] = useState('')
@@ -41,6 +42,10 @@ export default function QuickRsvpModal({
       setError('Ajoutez votre prénom.')
       return
     }
+    if (!email.trim()) {
+      setError('Ajoutez votre email pour recevoir la confirmation.')
+      return
+    }
 
     setLoading(true)
     setError(null)
@@ -51,6 +56,7 @@ export default function QuickRsvpModal({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name,
+          email,
           guests_count: guestsCount,
           attending,
           allergies: foodPreferences.trim(),
@@ -130,6 +136,18 @@ export default function QuickRsvpModal({
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Prénom"
                     autoFocus
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-text-dark font-sans">
+                    Votre email <span className="text-primary">*</span>
+                  </label>
+                  <Input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="vous@email.com"
                   />
                 </div>
 

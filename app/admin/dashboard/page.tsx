@@ -81,6 +81,12 @@ function RsvpCard({ rsvp, onDelete }: { rsvp: Rsvp; onDelete: (id: string) => vo
             </span>
             <span className="text-text-muted text-xs">{formatDate(rsvp.created_at)}</span>
           </div>
+          {rsvp.email && (
+            <p className="text-text-muted text-xs mt-1.5 flex items-center gap-1.5">
+              <Mail size={12} />
+              {rsvp.email}
+            </p>
+          )}
           {rsvp.allergies && (
             <p className="text-text-muted text-xs mt-1.5 italic flex items-center gap-1.5">
               <Utensils size={12} />

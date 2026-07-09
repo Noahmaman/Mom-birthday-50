@@ -44,6 +44,7 @@ const attendingOptions: {
 export default function RsvpPage() {
   const router = useRouter()
   const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
   const [guestsCount, setGuestsCount] = useState(1)
   const [attending, setAttending] = useState<AttendingOption | null>(null)
   const [allergies, setAllergies] = useState('')
@@ -54,6 +55,7 @@ export default function RsvpPage() {
 
   const handleSubmit = async () => {
     if (!name.trim()) { setError('Veuillez entrer votre nom'); return }
+    if (!email.trim()) { setError('Veuillez entrer votre email'); return }
     if (!attending) { setError('Veuillez indiquer votre présence'); return }
 
     setLoading(true)
@@ -63,7 +65,7 @@ export default function RsvpPage() {
       const res = await fetch('/api/rsvp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, guests_count: guestsCount, attending, allergies, comment }),
+        body: JSON.stringify({ name, email, guests_count: guestsCount, attending, allergies, comment }),
       })
       if (!res.ok) throw new Error()
       setSuccess(true)
@@ -140,6 +142,18 @@ export default function RsvpPage() {
             Nom complet <span className="text-primary">*</span>
           </label>
           <Input placeholder="Votre nom et prénom" value={name} onChange={(e) => setName(e.target.value)} />
+        </motion.div>
+
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
+          <label className="block text-sm font-medium text-text-dark mb-2 font-sans">
+            Email <span className="text-primary">*</span>
+          </label>
+          <Input
+            type="email"
+            placeholder="vous@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
         </motion.div>
 
         {/* Guests count */}

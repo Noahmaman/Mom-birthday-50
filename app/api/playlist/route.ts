@@ -3,8 +3,26 @@ import { supabase } from '@/lib/supabase'
 
 /* ── Metadata fetchers via oEmbed (no API key needed) ─────────── */
 
+function extractYoutubeId(url: string): string | null {
+  const patterns = [
+    /youtu\.be\/([^#&?/]*)/,
+    /youtube\.com\/watch\?v=([^#&?]*)/,
+    /youtube\.com\/shorts\/([^#&?/]*)/,
+    /youtube\.com\/embed\/([^#&?/]*)/,
+    /youtube\.com\/v\/([^#&?/]*)/,
+    /m\.youtube\.com\/watch\?v=([^#&?]*)/,
+  ]
+
+  for (const pattern of patterns) {
+    const match = url.match(pattern)
+    if (match?.[1]) return match[1]
+  }
+  return null
+}
+
 async function fetchYoutubeMetadata(url: string) {
   try {
+    const videoId = extractYoutubeId(url)
     const res = await fetch(
       `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`,
       { next: { revalidate: 3600 } }
@@ -14,7 +32,7 @@ async function fetchYoutubeMetadata(url: string) {
     return {
       title: data.title as string,
       artist: (data.author_name as string).replace(' - Topic', '').replace(' - VEVO', ''),
-      artwork_url: data.thumbnail_url as string,
+      artwork_url: videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : data.thumbnail_url as string,
     }
   } catch {
     return null

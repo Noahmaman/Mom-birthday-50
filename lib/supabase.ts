@@ -7,6 +7,7 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js'
  * create table rsvps (
  *   id uuid default gen_random_uuid() primary key,
  *   name text not null,
+ *   email text,
  *   guests_count integer default 1,
  *   attending text check (attending in ('yes', 'no', 'maybe')) not null,
  *   allergies text,
@@ -58,6 +59,7 @@ export const supabase: SupabaseClient = createClient(url, key)
 export type Rsvp = {
   id: string
   name: string
+  email?: string
   guests_count: number
   attending: 'yes' | 'no' | 'maybe'
   allergies?: string

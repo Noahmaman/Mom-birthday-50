@@ -16,36 +16,37 @@ const cartoonFont = '"Comic Sans MS", "Comic Sans", "Chalkboard SE", "Marker Fel
 const travelFont = 'Georgia, "Palatino Linotype", "Book Antiqua", serif'
 
 const kissOptions = [
-  { language: 'Français', text: 'Bisous' },
-  { language: 'Anglais', text: 'Kisses' },
-  { language: 'Espagnol', text: 'Besos' },
-  { language: 'Italien', text: 'Baci' },
-  { language: 'Portugais', text: 'Beijos' },
-  { language: 'Allemand', text: 'Küsse' },
-  { language: 'Néerlandais', text: 'Kusjes' },
-  { language: 'Hébreu', text: 'Neshikot' },
-  { language: 'Arabe', text: 'Qoblat' },
-  { language: 'Russe', text: 'Potselui' },
-  { language: 'Polonais', text: 'Buziaki' },
-  { language: 'Grec', text: 'Filakia' },
-  { language: 'Turc', text: 'Öpücükler' },
-  { language: 'Japonais', text: 'Kisu' },
-  { language: 'Coréen', text: 'Kiseu' },
-  { language: 'Chinois', text: 'Qīn qīn' },
-  { language: 'Hindi', text: 'Chumban' },
-  { language: 'Suédois', text: 'Pussar' },
-  { language: 'Danois', text: 'Kys' },
-  { language: 'Norvégien', text: 'Kyss' },
-  { language: 'Finnois', text: 'Suukkoja' },
-  { language: 'Roumain', text: 'Pupici' },
-  { language: 'Hongrois', text: 'Puszik' },
-  { language: 'Tchèque', text: 'Pusinky' },
-  { language: 'Croate', text: 'Puse' },
-  { language: 'Serbe', text: 'Poljupci' },
-  { language: 'Indonésien', text: 'Ciuman' },
-  { language: 'Swahili', text: 'Mabusu' },
-  { language: 'Thaï', text: 'Jup jup' },
-  { language: 'Vietnamien', text: 'Những nụ hôn' },
+  { language: 'Français', text: 'Bisous', flag: '🇫🇷' },
+  { language: 'Français', text: 'Bisous Yael', flag: '🇫🇷' },
+  { language: 'Anglais', text: 'Kisses', flag: '🇬🇧' },
+  { language: 'Espagnol', text: 'Besos', flag: '🇪🇸' },
+  { language: 'Italien', text: 'Baci', flag: '🇮🇹' },
+  { language: 'Portugais', text: 'Beijos', flag: '🇵🇹' },
+  { language: 'Allemand', text: 'Küsse', flag: '🇩🇪' },
+  { language: 'Néerlandais', text: 'Kusjes', flag: '🇳🇱' },
+  { language: 'Hébreu', text: 'Neshikot', flag: '🇮🇱' },
+  { language: 'Arabe', text: 'Qoblat', flag: '🇲🇦' },
+  { language: 'Russe', text: 'Potselui', flag: '🇷🇺' },
+  { language: 'Polonais', text: 'Buziaki', flag: '🇵🇱' },
+  { language: 'Grec', text: 'Filakia', flag: '🇬🇷' },
+  { language: 'Turc', text: 'Öpücükler', flag: '🇹🇷' },
+  { language: 'Japonais', text: 'Kisu', flag: '🇯🇵' },
+  { language: 'Coréen', text: 'Kiseu', flag: '🇰🇷' },
+  { language: 'Chinois', text: 'Qīn qīn', flag: '🇨🇳' },
+  { language: 'Hindi', text: 'Chumban', flag: '🇮🇳' },
+  { language: 'Suédois', text: 'Pussar', flag: '🇸🇪' },
+  { language: 'Danois', text: 'Kys', flag: '🇩🇰' },
+  { language: 'Norvégien', text: 'Kyss', flag: '🇳🇴' },
+  { language: 'Finnois', text: 'Suukkoja', flag: '🇫🇮' },
+  { language: 'Roumain', text: 'Pupici', flag: '🇷🇴' },
+  { language: 'Hongrois', text: 'Puszik', flag: '🇭🇺' },
+  { language: 'Tchèque', text: 'Pusinky', flag: '🇨🇿' },
+  { language: 'Croate', text: 'Puse', flag: '🇭🇷' },
+  { language: 'Serbe', text: 'Poljupci', flag: '🇷🇸' },
+  { language: 'Indonésien', text: 'Ciuman', flag: '🇮🇩' },
+  { language: 'Swahili', text: 'Mabusu', flag: '🇰🇪' },
+  { language: 'Thaï', text: 'Jup jup', flag: '🇹🇭' },
+  { language: 'Vietnamien', text: 'Những nụ hôn', flag: '🇻🇳' },
 ]
 
 export default function VideoPage() {
@@ -59,6 +60,7 @@ export default function VideoPage() {
   const [uploadProgress, setUploadProgress] = useState(0)
   const [selectedKiss, setSelectedKiss] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const selectedKissOption = kissOptions.find((kiss) => kiss.text === selectedKiss)
 
   const videoRef = useRef<HTMLVideoElement>(null)
   const previewRef = useRef<HTMLVideoElement>(null)
@@ -121,6 +123,7 @@ export default function VideoPage() {
 
     const safeName = authorName.trim() || 'Pour Yael'
     const kissText = selectedKiss || 'Un message pour Yael'
+    const kissFlag = selectedKissOption?.flag
     const fontSize = Math.max(34, Math.round(width * 0.065))
     context.font = `700 italic ${fontSize}px ${travelFont}`
     context.textAlign = 'center'
@@ -138,11 +141,15 @@ export default function VideoPage() {
     context.fillStyle = 'rgba(255, 238, 170, 0.95)'
     context.strokeStyle = 'rgba(30, 24, 18, 0.56)'
     context.lineWidth = Math.max(3, Math.round(width * 0.006))
-    context.strokeText(kissText, width / 2, height - Math.max(42, height * 0.04))
-    context.fillText(kissText, width / 2, height - Math.max(42, height * 0.04))
+    context.textAlign = 'right'
+    const kissX = width - Math.max(30, width * 0.045)
+    const kissY = height - Math.max(42, height * 0.04)
+    const renderedKiss = kissFlag ? `${kissText} ${kissFlag}` : kissText
+    context.strokeText(renderedKiss, kissX, kissY)
+    context.fillText(renderedKiss, kissX, kissY)
 
     animationRef.current = requestAnimationFrame(drawCameraFrame)
-  }, [authorName, selectedKiss])
+  }, [authorName, selectedKiss, selectedKissOption])
 
   const getRecorderMimeType = () => {
     if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')) return 'video/webm;codecs=vp9,opus'
@@ -396,7 +403,7 @@ export default function VideoPage() {
               >
                 <span className="block">{kiss.text}</span>
                 <span className={`block text-[10px] ${selected ? 'text-white/65' : 'text-text-muted'}`}>
-                  {kiss.language}
+                  {kiss.flag} {kiss.language}
                 </span>
               </button>
             )
@@ -454,12 +461,16 @@ export default function VideoPage() {
                 >
                   {authorName.trim() || 'Votre prénom'}
                 </p>
-                <p
-                  className="text-center text-base font-bold mt-1 drop-shadow-lg"
-                  style={{ color: '#FFEFAA', fontFamily: cartoonFont }}
-                >
-                  {selectedKiss || 'Un message pour Yael'}
-                </p>
+                {selectedKissOption && (
+                  <div className="mt-2 flex justify-end">
+                    <p
+                      className="rounded-full bg-black/45 px-4 py-2 text-right text-base font-bold backdrop-blur-sm drop-shadow-lg"
+                      style={{ color: '#FFEFAA', fontFamily: cartoonFont }}
+                    >
+                      {selectedKissOption.text} <span className="ml-1">{selectedKissOption.flag}</span>
+                    </p>
+                  </div>
+                )}
               </div>
               {recording && (
                 <div className="absolute top-4 left-4 flex items-center gap-2 bg-black/60 rounded-full px-3 py-1.5">
@@ -518,13 +529,13 @@ export default function VideoPage() {
                   <span className="text-white text-xs font-semibold font-sans">{authorName.trim()}</span>
                 </div>
               )}
-              {selectedKiss && (
-                <div className="absolute inset-x-0 bottom-3 flex justify-center px-4 pointer-events-none">
+              {selectedKissOption && (
+                <div className="absolute inset-x-0 bottom-3 flex justify-end px-4 pointer-events-none">
                   <span
                     className="rounded-full bg-black/55 px-4 py-2 text-sm font-bold backdrop-blur-sm"
                     style={{ color: '#FFEFAA', fontFamily: cartoonFont }}
                   >
-                    {selectedKiss}
+                    {selectedKissOption.text} <span className="ml-1">{selectedKissOption.flag}</span>
                   </span>
                 </div>
               )}
