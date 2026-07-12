@@ -7,21 +7,28 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import type { PlaylistItem } from '@/lib/supabase'
-import { getPlatformColor } from '@/lib/utils'
+import { extractYoutubeId, getPlatformColor } from '@/lib/utils'
 
 /* ── Curated suggestions ──────────────────────────────────────── */
 const SUGGESTED_SONGS = [
-  { title: 'La Vie en Rose', artist: 'Édith Piaf', color: '#B87A6A', search: 'Edith Piaf La Vie en Rose' },
-  { title: "Je l'aime à mourir", artist: 'Francis Cabrel', color: '#7A6B9A', search: 'Francis Cabrel Je l aime a mourir' },
-  { title: "Pour que tu m'aimes encore", artist: 'Céline Dion', color: '#6A9A8A', search: 'Celine Dion Pour que tu maimes encore' },
-  { title: "L'Hymne à l'amour", artist: 'Édith Piaf', color: '#B8965A', search: 'Edith Piaf Hymne a l amour' },
-  { title: "Et si tu n'existais pas", artist: 'Joe Dassin', color: '#B87A6A', search: 'Joe Dassin Et si tu n existais pas' },
-  { title: 'La Bohème', artist: 'Charles Aznavour', color: '#7A6B9A', search: 'Charles Aznavour La Bohème' },
-  { title: 'Perfect', artist: 'Ed Sheeran', color: '#6A9A8A', search: 'Ed Sheeran Perfect' },
-  { title: 'Shallow', artist: 'Lady Gaga & Bradley Cooper', color: '#B8965A', search: 'Lady Gaga Shallow' },
-  { title: 'Quelque chose de Tennessee', artist: 'Johnny Hallyday', color: '#B87A6A', search: 'Johnny Hallyday Quelque chose de Tennessee' },
-  { title: 'Non, je ne regrette rien', artist: 'Édith Piaf', color: '#7A6B9A', search: 'Edith Piaf Non je ne regrette rien' },
+  { title: 'La Vie en Rose', artist: 'Édith Piaf', color: '#B87A6A', search: 'Edith Piaf La Vie en Rose official audio' },
+  { title: "Je l'aime à mourir", artist: 'Francis Cabrel', color: '#7A6B9A', search: 'Francis Cabrel Je l aime a mourir officiel' },
+  { title: "Pour que tu m'aimes encore", artist: 'Céline Dion', color: '#6A9A8A', search: 'Celine Dion Pour que tu maimes encore official video' },
+  { title: "L'Hymne à l'amour", artist: 'Édith Piaf', color: '#B8965A', search: 'Edith Piaf Hymne a l amour official audio' },
+  { title: "Et si tu n'existais pas", artist: 'Joe Dassin', color: '#B87A6A', search: 'Joe Dassin Et si tu n existais pas official audio' },
+  { title: 'La Bohème', artist: 'Charles Aznavour', color: '#7A6B9A', search: 'Charles Aznavour La Bohème official' },
+  { title: 'Perfect', artist: 'Ed Sheeran', color: '#6A9A8A', search: 'Ed Sheeran Perfect official music video' },
+  { title: 'Shallow', artist: 'Lady Gaga & Bradley Cooper', color: '#B8965A', search: 'Lady Gaga Bradley Cooper Shallow official music video' },
+  { title: 'Quelque chose de Tennessee', artist: 'Johnny Hallyday', color: '#B87A6A', search: 'Johnny Hallyday Quelque chose de Tennessee officiel' },
+  { title: 'Non, je ne regrette rien', artist: 'Édith Piaf', color: '#7A6B9A', search: 'Edith Piaf Non je ne regrette rien official audio' },
 ]
+
+type YoutubePreview = {
+  videoId: string
+  title: string
+  url: string
+  thumbnail: string
+}
 
 /* ── Platform badge ───────────────────────────────────────────── */
 function PlatformBadge({ platform }: { platform: string }) {
@@ -36,6 +43,9 @@ function PlatformBadge({ platform }: { platform: string }) {
 /* ── Song card ────────────────────────────────────────────────── */
 function SongCard({ item, onDelete }: { item: PlaylistItem; onDelete: (id: string) => void }) {
   const [imgError, setImgError] = useState(false)
+  const videoId = extractYoutubeId(item.url)
+  const youtubeThumbnail = videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : null
+  const artworkUrl = item.artwork_url || youtubeThumbnail
 
   return (
     <motion.div
@@ -48,9 +58,9 @@ function SongCard({ item, onDelete }: { item: PlaylistItem; onDelete: (id: strin
         className="w-13 h-13 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center"
         style={{ width: 52, height: 52, background: 'linear-gradient(135deg, #F2ECE6 0%, #EAE6F0 100%)' }}
       >
-        {item.artwork_url && !imgError ? (
+        {artworkUrl && !imgError ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={item.artwork_url} alt={item.title || ''} className="w-full h-full object-cover" onError={() => setImgError(true)} />
+          <img src={artworkUrl} alt={item.title || ''} className="w-full h-full object-cover" onError={() => setImgError(true)} />
         ) : (
           <Music2 size={20} className="text-text-muted" strokeWidth={1.5} />
         )}
@@ -87,28 +97,45 @@ function SongCard({ item, onDelete }: { item: PlaylistItem; onDelete: (id: strin
 /* ── Suggestion card ──────────────────────────────────────────── */
 function SuggestionCard({
   song,
+  preview,
   onPick,
 }: {
   song: typeof SUGGESTED_SONGS[0]
-  onPick: (s: typeof SUGGESTED_SONGS[0]) => void
+  preview?: YoutubePreview
+  onPick: (s: typeof SUGGESTED_SONGS[0], preview?: YoutubePreview) => void
 }) {
   return (
     <motion.div
       whileTap={{ scale: 0.94 }}
-      onClick={() => onPick(song)}
-      className="flex-shrink-0 w-40 rounded-2xl p-3.5 cursor-pointer card-shadow flex flex-col gap-2"
+      onClick={() => onPick(song, preview)}
+      className="flex-shrink-0 w-44 overflow-hidden rounded-2xl cursor-pointer card-shadow"
       style={{ background: `linear-gradient(135deg, ${song.color}18 0%, ${song.color}30 100%)`, border: `1px solid ${song.color}22` }}
     >
-      <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: `${song.color}25` }}>
-        <Play size={16} strokeWidth={1.8} style={{ color: song.color }} />
+      <div className="relative aspect-video w-full bg-white/60">
+        {preview?.thumbnail ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={preview.thumbnail} alt={song.title} className="h-full w-full object-cover" />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center" style={{ background: `${song.color}25` }}>
+            <Music2 size={22} strokeWidth={1.8} style={{ color: song.color }} />
+          </div>
+        )}
+        <div className="absolute inset-0 flex items-center justify-center bg-black/10">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 shadow-sm">
+            <Play size={15} fill="currentColor" strokeWidth={1.8} style={{ color: song.color }} />
+          </span>
+        </div>
       </div>
-      <div>
+      <div className="p-3">
         <p className="text-xs font-semibold text-text-dark leading-tight font-sans line-clamp-2">{song.title}</p>
         <p className="text-[10px] text-text-muted mt-0.5 font-sans truncate">{song.artist}</p>
+        {preview?.title && (
+          <p className="mt-1 text-[9px] text-text-muted font-sans line-clamp-1">{preview.title}</p>
+        )}
+        <span className="mt-2 inline-block text-[9px] font-bold uppercase tracking-wider font-sans" style={{ color: song.color }}>
+          Preview YouTube
+        </span>
       </div>
-      <span className="text-[9px] font-bold uppercase tracking-wider font-sans" style={{ color: song.color }}>
-        Ajouter
-      </span>
     </motion.div>
   )
 }
@@ -124,6 +151,7 @@ export default function PlaylistPage() {
   const [error, setError] = useState<string | null>(null)
   const [successAdded, setSuccessAdded] = useState(false)
   const [pickedSong, setPickedSong] = useState<typeof SUGGESTED_SONGS[0] | null>(null)
+  const [previews, setPreviews] = useState<Record<string, YoutubePreview>>({})
 
   const fetchSongs = useCallback(async () => {
     try {
@@ -133,6 +161,32 @@ export default function PlaylistPage() {
   }, [])
 
   useEffect(() => { fetchSongs() }, [fetchSongs])
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function fetchPreviews() {
+      const entries = await Promise.all(
+        SUGGESTED_SONGS.map(async (song) => {
+          try {
+            const res = await fetch(`/api/youtube-preview?q=${encodeURIComponent(song.search)}`)
+            if (!res.ok) return null
+            const preview = await res.json() as YoutubePreview
+            return [song.title, preview] as const
+          } catch {
+            return null
+          }
+        })
+      )
+
+      if (!cancelled) {
+        setPreviews(Object.fromEntries(entries.filter(Boolean) as Array<readonly [string, YoutubePreview]>))
+      }
+    }
+
+    fetchPreviews()
+    return () => { cancelled = true }
+  }, [])
 
   const handleAdd = async (overrideUrl?: string) => {
     const target = overrideUrl || url
@@ -163,11 +217,11 @@ export default function PlaylistPage() {
     }
   }
 
-  const handlePickSuggestion = (song: typeof SUGGESTED_SONGS[0]) => {
+  const handlePickSuggestion = (song: typeof SUGGESTED_SONGS[0], preview?: YoutubePreview) => {
     setPickedSong(song)
-    const ytSearch = `https://www.youtube.com/results?search_query=${encodeURIComponent(song.search)}`
-    window.open(ytSearch, '_blank')
-    setUrl('')
+    const targetUrl = preview?.url || `https://www.youtube.com/results?search_query=${encodeURIComponent(song.search)}`
+    window.open(targetUrl, '_blank')
+    setUrl(preview?.url || '')
     setError(null)
   }
 
@@ -196,7 +250,7 @@ export default function PlaylistPage() {
         </p>
         <div className="flex gap-3 overflow-x-auto pb-2 -mx-5 px-5" style={{ scrollbarWidth: 'none' }}>
           {SUGGESTED_SONGS.map((song) => (
-            <SuggestionCard key={song.title} song={song} onPick={handlePickSuggestion} />
+            <SuggestionCard key={song.title} song={song} preview={previews[song.title]} onPick={handlePickSuggestion} />
           ))}
         </div>
         <AnimatePresence>
@@ -212,7 +266,7 @@ export default function PlaylistPage() {
                 {pickedSong.title} — {pickedSong.artist}
               </p>
               <p className="text-text-muted">
-                YouTube vient de s&apos;ouvrir. Copiez le lien de la vidéo et collez-le ci-dessous.
+                YouTube vient de s&apos;ouvrir. Le lien est pré-rempli si la preview officielle a été trouvée.
               </p>
             </motion.div>
           )}

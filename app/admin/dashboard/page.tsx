@@ -24,7 +24,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import type { Rsvp, Message, Video as VideoType, PlaylistItem } from '@/lib/supabase'
-import { formatDate, getAttendingLabel, getAttendingColor, getPlatformColor } from '@/lib/utils'
+import { extractYoutubeId, formatDate, getAttendingLabel, getAttendingColor, getPlatformColor } from '@/lib/utils'
 import Image from 'next/image'
 
 interface Stats {
@@ -203,6 +203,9 @@ function VideoCard({ video, onDelete }: { video: VideoType; onDelete: (id: strin
 
 function SongCard({ song, onDelete }: { song: PlaylistItem; onDelete: (id: string) => void }) {
   const [imgError, setImgError] = useState(false)
+  const videoId = extractYoutubeId(song.url)
+  const youtubeThumbnail = videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : null
+  const artworkUrl = song.artwork_url || youtubeThumbnail
 
   return (
     <motion.div
@@ -214,9 +217,9 @@ function SongCard({ song, onDelete }: { song: PlaylistItem; onDelete: (id: strin
       <div className="w-12 h-12 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center"
         style={{ background: 'linear-gradient(135deg, #F4A7B9 0%, #C9A7E8 100%)' }}
       >
-        {song.artwork_url && !imgError ? (
+        {artworkUrl && !imgError ? (
           <Image
-            src={song.artwork_url}
+            src={artworkUrl}
             alt={song.title || 'Artwork'}
             width={48}
             height={48}

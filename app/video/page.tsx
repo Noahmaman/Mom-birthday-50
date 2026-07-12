@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronLeft, Clapperboard, Upload, Circle, Square, Check, RotateCcw, Loader2 } from 'lucide-react'
+import { ChevronLeft, Clapperboard, Upload, Circle, Square, Check, RotateCcw, Loader2, Sparkles } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -372,6 +372,28 @@ export default function VideoPage() {
       </motion.div>
 
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-5">
+        <div className="mb-5 rounded-3xl bg-[#F6F1EB] p-5 card-shadow">
+          <div className="mb-3 flex items-center gap-2">
+            <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-white">
+              <Sparkles size={18} className="text-primary" strokeWidth={1.8} />
+            </span>
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary font-sans">THE vidéo souvenir</p>
+              <h2 className="text-xl font-light text-text-dark font-display">Pour la vidéo souvenir</h2>
+            </div>
+          </div>
+          <div className="space-y-3 text-sm leading-relaxed text-text-dark font-sans">
+            <p>
+              <span className="font-semibold">1.</span> Racontez une petite anecdote, un souvenir marquant, un fou rire,
+              quelques mots d&apos;amitié ou d&apos;amour. Laissez libre cours à votre inspiration.
+            </p>
+            <p>
+              <span className="font-semibold">2.</span> À la fin de votre vidéo, terminez par un petit mot du type
+              gros bisous, je t&apos;embrasse, je t&apos;aime ou je t&apos;adore, mais dans une langue étrangère.
+            </p>
+          </div>
+        </div>
+
         <label className="block text-sm font-medium text-text-dark mb-2 font-sans">
           Votre prénom <span className="text-primary">*</span>
         </label>
