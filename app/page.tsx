@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { CalendarCheck, Clapperboard, Headphones, PenLine, Sparkles } from 'lucide-react'
+import { CalendarCheck, Clapperboard, Gift, Headphones, PenLine, Sparkles } from 'lucide-react'
 import Image from 'next/image'
 import CountdownTimer from '@/components/CountdownTimer'
 import FeatureCard from '@/components/FeatureCard'
@@ -41,6 +41,14 @@ const cards = [
     href: '/message',
     gradient: 'linear-gradient(135deg, #F0EBE2 0%, #E4D8C0 100%)',
     iconColor: '#B8965A',
+  },
+  {
+    Icon: Gift,
+    title: 'Cagnotte',
+    subtitle: 'Participer au cadeau',
+    href: '/cagnotte',
+    gradient: 'linear-gradient(135deg, #F6F1EB 0%, #E6EFEC 100%)',
+    iconColor: '#6A9A8A',
   },
 ]
 

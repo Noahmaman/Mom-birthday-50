@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Home, CalendarCheck, Headphones, PenLine, Clapperboard } from 'lucide-react'
+import { Home, CalendarCheck, Gift, Headphones, PenLine, Clapperboard } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -11,6 +11,7 @@ const navItems = [
   { href: '/video', icon: Clapperboard, label: 'Vidéo' },
   { href: '/playlist', icon: Headphones, label: 'Playlist' },
   { href: '/message', icon: PenLine, label: 'Message' },
+  { href: '/cagnotte', icon: Gift, label: 'Cagnotte' },
 ]
 
 export default function BottomNav() {
@@ -46,7 +47,7 @@ export default function BottomNav() {
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: 'spring', stiffness: 300, damping: 30, delay: 0.3 }}
-        className="nav-pill rounded-full px-3 py-2 flex items-center gap-0.5"
+        className="nav-pill rounded-full px-2 py-2 flex items-center gap-0.5 max-w-[calc(100vw-1.5rem)] overflow-x-auto no-scrollbar"
       >
         {navItems.map((item) => {
           const isActive =
@@ -57,7 +58,7 @@ export default function BottomNav() {
             <Link key={item.href} href={item.href}>
               <motion.div
                 whileTap={{ scale: 0.83 }}
-                className="relative flex flex-col items-center px-3 py-2 rounded-full"
+                className="relative flex min-w-[52px] flex-col items-center px-2 py-2 rounded-full"
               >
                 {isActive && (
                   <motion.div
