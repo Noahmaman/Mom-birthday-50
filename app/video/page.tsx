@@ -8,10 +8,14 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Progress } from '@/components/ui/progress'
 import { supabase } from '@/lib/supabase'
+import { Upload as TusUpload } from 'tus-js-client'
 
 type Step = 'choose' | 'record' | 'upload' | 'preview' | 'submitting' | 'success'
 
 const MAX_DURATION = 90
+const MAX_VIDEO_SIZE = 45 * 1024 * 1024
+const RECORDER_VIDEO_BITRATE = 2_500_000
+const TUS_CHUNK_SIZE = 6 * 1024 * 1024
 const cartoonFont = '"Comic Sans MS", "Comic Sans", "Chalkboard SE", "Marker Felt", cursive'
 const travelFont = 'Georgia, "Palatino Linotype", "Book Antiqua", serif'
 
@@ -48,6 +52,77 @@ const kissOptions = [
   { language: 'Thaï', text: 'Jup jup', flag: '🇹🇭' },
   { language: 'Vietnamien', text: 'Những nụ hôn', flag: '🇻🇳' },
 ]
+
+function formatMegabytes(bytes: number) {
+  return `${(bytes / 1024 / 1024).toFixed(1)} Mo`
+}
+
+function getUploadErrorMessage(error: unknown) {
+  const message = error instanceof Error ? error.message : String(error)
+  const lowerMessage = message.toLowerCase()
+
+  if (lowerMessage.includes('maximum allowed size') || lowerMessage.includes('too large') || lowerMessage.includes('413')) {
+    return `La vidéo dépasse la taille autorisée (${formatMegabytes(MAX_VIDEO_SIZE)} max). Réduisez sa durée ou sa qualité puis réessayez.`
+  }
+  if (lowerMessage.includes('row-level security') || lowerMessage.includes('not authorized') || lowerMessage.includes('403')) {
+    return "L'envoi est temporairement bloqué par le stockage. Prévenez l'organisateur pour qu'il réactive les autorisations."
+  }
+  if (lowerMessage.includes('network') || lowerMessage.includes('fetch') || lowerMessage.includes('offline')) {
+    return 'La connexion a été interrompue. Vérifiez le réseau puis appuyez à nouveau sur Envoyer : le transfert reprendra.'
+  }
+
+  return `La vidéo n'a pas pu être envoyée. Réessayez ou choisissez une vidéo plus légère. (${message})`
+}
+
+function uploadVideoResumably(
+  video: Blob,
+  fileName: string,
+  onProgress: (progress: number) => void,
+) {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  if (!supabaseUrl || !anonKey) {
+    return Promise.reject(new Error("Le service d'envoi n'est pas configuré"))
+  }
+
+  const projectUrl = new URL(supabaseUrl)
+  const projectRef = projectUrl.hostname.split('.')[0]
+  const resumableEndpoint = projectUrl.hostname.endsWith('.supabase.co')
+    ? `https://${projectRef}.storage.supabase.co/storage/v1/upload/resumable`
+    : `${projectUrl.origin}/storage/v1/upload/resumable`
+
+  return new Promise<void>((resolve, reject) => {
+    const upload = new TusUpload(video, {
+      endpoint: resumableEndpoint,
+      retryDelays: [0, 1000, 3000, 5000, 10000],
+      headers: {
+        authorization: `Bearer ${anonKey}`,
+        apikey: anonKey,
+      },
+      metadata: {
+        bucketName: 'videos',
+        objectName: fileName,
+        contentType: video.type || 'video/webm',
+        cacheControl: '3600',
+      },
+      chunkSize: TUS_CHUNK_SIZE,
+      uploadDataDuringCreation: true,
+      removeFingerprintOnSuccess: true,
+      onError: reject,
+      onProgress: (bytesUploaded, bytesTotal) => {
+        const percentage = bytesTotal > 0 ? Math.round((bytesUploaded / bytesTotal) * 90) : 0
+        onProgress(percentage)
+      },
+      onSuccess: () => resolve(),
+    })
+
+    upload.findPreviousUploads().then((previousUploads) => {
+      if (previousUploads.length > 0) upload.resumeFromPreviousUpload(previousUploads[0])
+      upload.start()
+    }).catch(reject)
+  })
+}
 
 export default function VideoPage() {
   const router = useRouter()
@@ -210,9 +285,12 @@ export default function VideoPage() {
     streamRef.current.getAudioTracks().forEach((track) => canvasStream.addTrack(track))
     const mimeType = getRecorderMimeType()
 
-    const recorder = mimeType
-      ? new MediaRecorder(canvasStream, { mimeType })
-      : new MediaRecorder(canvasStream)
+    const recorderOptions: MediaRecorderOptions = {
+      videoBitsPerSecond: RECORDER_VIDEO_BITRATE,
+      audioBitsPerSecond: 128_000,
+      ...(mimeType ? { mimeType } : {}),
+    }
+    const recorder = new MediaRecorder(canvasStream, recorderOptions)
     mediaRecorderRef.current = recorder
 
     recorder.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data) }
@@ -250,6 +328,19 @@ export default function VideoPage() {
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
+
+    if (!file.type.startsWith('video/')) {
+      setError('Veuillez choisir un fichier vidéo.')
+      e.target.value = ''
+      return
+    }
+    if (file.size > MAX_VIDEO_SIZE) {
+      setError(`Cette vidéo fait ${formatMegabytes(file.size)}. La taille maximale est ${formatMegabytes(MAX_VIDEO_SIZE)} : réduisez sa durée ou sa qualité.`)
+      e.target.value = ''
+      return
+    }
+
+    setError(null)
     setVideoBlob(file)
     const url = URL.createObjectURL(file)
     setVideoUrl(url)
@@ -259,6 +350,10 @@ export default function VideoPage() {
   const handleSubmit = async () => {
     if (!authorName.trim()) { setError('Veuillez entrer votre nom'); return }
     if (!videoBlob) { setError('Aucune vidéo sélectionnée'); return }
+    if (videoBlob.size > MAX_VIDEO_SIZE) {
+      setError(`Cette vidéo fait ${formatMegabytes(videoBlob.size)}. La taille maximale est ${formatMegabytes(MAX_VIDEO_SIZE)}.`)
+      return
+    }
 
     setStep('submitting')
     setError(null)
@@ -266,13 +361,9 @@ export default function VideoPage() {
 
     try {
       const cleanName = authorName.trim().replace(/[^\w-]+/g, '-').replace(/-+/g, '-')
-      const fileName = `${Date.now()}-${cleanName}.${getVideoExtension(videoBlob.type)}`
-      const { error: uploadError } = await supabase.storage
-        .from('videos')
-        .upload(fileName, videoBlob, { contentType: videoBlob.type || 'video/webm', upsert: false })
-
-      if (uploadError) throw uploadError
-      setUploadProgress(80)
+      const fileName = `${Date.now()}-${cleanName || 'invite'}.${getVideoExtension(videoBlob.type)}`
+      await uploadVideoResumably(videoBlob, fileName, setUploadProgress)
+      setUploadProgress(92)
 
       const { data: urlData } = supabase.storage.from('videos').getPublicUrl(fileName)
 
@@ -281,12 +372,15 @@ export default function VideoPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ author_name: authorName, url: urlData.publicUrl }),
       })
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const details = await res.json().catch(() => null)
+        throw new Error(details?.error || "L'enregistrement de la vidéo a échoué")
+      }
 
       setUploadProgress(100)
       setStep('success')
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur lors de l'upload")
+      setError(getUploadErrorMessage(err))
       setStep('preview')
     }
   }
