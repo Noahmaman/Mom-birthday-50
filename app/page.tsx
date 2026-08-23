@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { CalendarCheck, Clapperboard, Gift, Headphones, PenLine, Sparkles } from 'lucide-react'
+import { CalendarCheck, Clapperboard, Gift, Headphones, Images, PenLine, Sparkles } from 'lucide-react'
 import Image from 'next/image'
 import CountdownTimer from '@/components/CountdownTimer'
 import FeatureCard from '@/components/FeatureCard'
@@ -10,6 +10,15 @@ import LoadingScreen from '@/components/LoadingScreen'
 import QuickRsvpModal from '@/components/QuickRsvpModal'
 
 const cards = [
+  {
+    Icon: Images,
+    title: 'Ajoutez vos photos',
+    subtitle: 'Créez l’album souvenir de Yael',
+    href: '/photo',
+    gradient: 'linear-gradient(135deg, #DCECE6 0%, #F0EBE2 52%, #E8D8D0 100%)',
+    iconColor: '#5F8D7E',
+    featured: true,
+  },
   {
     Icon: CalendarCheck,
     title: 'RSVP',

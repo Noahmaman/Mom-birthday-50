@@ -45,6 +45,8 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js'
  *
  * -- Storage bucket for videos (run in Supabase dashboard):
  * -- Create a public bucket named "videos"
+ * -- Guest photos reuse this media table and bucket. The file extension
+ * -- distinguishes photos from videos, avoiding a production schema migration.
  */
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -80,6 +82,8 @@ export type Video = {
   url: string
   created_at: string
 }
+
+export type GuestPhoto = Video
 
 export type PlaylistItem = {
   id: string

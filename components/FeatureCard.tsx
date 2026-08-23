@@ -12,6 +12,7 @@ interface FeatureCardProps {
   gradient: string
   iconColor?: string
   delay?: number
+  featured?: boolean
 }
 
 export default function FeatureCard({
@@ -22,45 +23,50 @@ export default function FeatureCard({
   gradient,
   iconColor = '#1E1812',
   delay = 0,
+  featured = false,
 }: FeatureCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 24, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ type: 'spring', stiffness: 260, damping: 22, delay }}
+      className={featured ? 'col-span-2' : ''}
     >
       <Link href={href} className="block">
         <motion.div
           whileTap={{ scale: 0.94 }}
           whileHover={{ scale: 1.02, y: -2 }}
           transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-          className="rounded-3xl p-5 card-shadow relative overflow-hidden cursor-pointer"
+          className={`rounded-3xl p-5 card-shadow relative overflow-hidden cursor-pointer ${featured ? 'min-h-36' : ''}`}
           style={{ background: gradient }}
         >
           {/* Decorative circles */}
           <div className="absolute -right-8 -top-8 w-28 h-28 rounded-full bg-white/15" aria-hidden />
           <div className="absolute -right-2 -bottom-10 w-20 h-20 rounded-full bg-white/10" aria-hidden />
 
-          <div className="relative z-10">
+          <div className={`relative z-10 ${featured ? 'flex h-full items-center gap-4' : ''}`}>
             {/* Icon container */}
             <motion.div
               animate={{ y: [0, -3, 0] }}
               transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: delay * 0.5 }}
-              className="w-11 h-11 rounded-2xl bg-white/50 flex items-center justify-center mb-4"
+              className={`rounded-2xl bg-white/60 flex items-center justify-center ${featured ? 'h-16 w-16 shrink-0' : 'w-11 h-11 mb-4'}`}
             >
-              <Icon size={22} strokeWidth={1.8} style={{ color: iconColor }} />
+              <Icon size={featured ? 29 : 22} strokeWidth={1.8} style={{ color: iconColor }} />
             </motion.div>
 
-            <h3 className="text-base font-semibold text-text-dark leading-tight font-sans">
-              {title}
-            </h3>
-            <p className="text-xs text-text-muted mt-1 leading-snug font-sans">
-              {subtitle}
-            </p>
+            <div className={featured ? 'min-w-0 flex-1' : ''}>
+              {featured && <span className="mb-1.5 inline-block rounded-full bg-white/65 px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest text-accent-sage">Nouveau · Album photo</span>}
+              <h3 className={`${featured ? 'text-xl' : 'text-base'} font-semibold text-text-dark leading-tight font-sans`}>
+                {title}
+              </h3>
+              <p className={`${featured ? 'text-sm' : 'text-xs'} text-text-muted mt-1 leading-snug font-sans`}>
+                {subtitle}
+              </p>
 
-            <div className="mt-4">
-              <div className="w-7 h-7 rounded-full bg-white/40 flex items-center justify-center">
-                <ArrowUpRight size={14} className="text-text-dark" />
+              <div className={featured ? 'mt-3' : 'mt-4'}>
+                <div className={`${featured ? 'h-9 w-9 bg-text-dark' : 'w-7 h-7 bg-white/40'} rounded-full flex items-center justify-center`}>
+                  <ArrowUpRight size={featured ? 17 : 14} className={featured ? 'text-white' : 'text-text-dark'} />
+                </div>
               </div>
             </div>
           </div>

@@ -1,12 +1,13 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Home, CalendarCheck, Gift, Headphones, PenLine, Clapperboard } from 'lucide-react'
+import { Home, CalendarCheck, Gift, Headphones, Images, PenLine, Clapperboard } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 const navItems = [
   { href: '/', icon: Home, label: 'Accueil' },
+  { href: '/photo', icon: Images, label: 'Photos' },
   { href: '/rsvp', icon: CalendarCheck, label: 'RSVP' },
   { href: '/video', icon: Clapperboard, label: 'Vidéo' },
   { href: '/playlist', icon: Headphones, label: 'Playlist' },

@@ -7,6 +7,7 @@ import {
   CheckCircle2,
   Download,
   ExternalLink,
+  Images,
   ListMusic,
   LogOut,
   Mail,
@@ -23,7 +24,7 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-import type { Rsvp, Message, Video as VideoType, PlaylistItem } from '@/lib/supabase'
+import type { Rsvp, Message, Video as VideoType, GuestPhoto, PlaylistItem } from '@/lib/supabase'
 import { extractYoutubeId, formatDate, getAttendingLabel, getAttendingColor, getPlatformColor } from '@/lib/utils'
 import Image from 'next/image'
 
@@ -31,6 +32,7 @@ interface Stats {
   totalRsvps: number
   confirmed: number
   totalVideos: number
+  totalPhotos: number
   totalMessages: number
   totalSongs: number
 }
@@ -201,6 +203,37 @@ function VideoCard({ video, onDelete }: { video: VideoType; onDelete: (id: strin
   )
 }
 
+function PhotoCard({ photo, onDelete }: { photo: GuestPhoto; onDelete: (id: string) => void }) {
+  return (
+    <motion.figure
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      className="glass-card overflow-hidden rounded-3xl card-shadow"
+      style={{ background: 'linear-gradient(135deg, #E6EFEC 0%, #FFFFFF 100%)' }}
+    >
+      <button onClick={() => window.open(photo.url, '_blank')} className="block w-full bg-[#EEE8E0]" aria-label={`Ouvrir la photo de ${photo.author_name}`}>
+        <img src={photo.url} alt={`Photo envoyée par ${photo.author_name}`} loading="lazy" className="aspect-square h-full w-full object-cover" />
+      </button>
+      <figcaption className="flex items-center gap-3 p-4">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent-sage/20">
+          <Images size={16} className="text-accent-sage" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-semibold text-text-dark">{photo.author_name}</p>
+          <p className="text-xs text-text-muted">{formatDate(photo.created_at)}</p>
+        </div>
+        <a href={photo.url} download className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50" aria-label="Télécharger la photo">
+          <Download size={13} className="text-blue-500" />
+        </a>
+        <button onClick={() => onDelete(photo.id)} className="flex h-8 w-8 items-center justify-center rounded-full bg-red-50" aria-label="Supprimer la photo">
+          <Trash2 size={13} className="text-red-400" />
+        </button>
+      </figcaption>
+    </motion.figure>
+  )
+}
+
 function SongCard({ song, onDelete }: { song: PlaylistItem; onDelete: (id: string) => void }) {
   const [imgError, setImgError] = useState(false)
   const videoId = extractYoutubeId(song.url)
@@ -268,6 +301,7 @@ export default function DashboardPage() {
   const [rsvps, setRsvps] = useState<Rsvp[]>([])
   const [messages, setMessages] = useState<Message[]>([])
   const [videos, setVideos] = useState<VideoType[]>([])
+  const [photos, setPhotos] = useState<GuestPhoto[]>([])
   const [songs, setSongs] = useState<PlaylistItem[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -275,6 +309,7 @@ export default function DashboardPage() {
     totalRsvps: rsvps.length,
     confirmed: rsvps.filter((r) => r.attending === 'yes').length,
     totalVideos: videos.length,
+    totalPhotos: photos.length,
     totalMessages: messages.length,
     totalSongs: songs.length,
   }
@@ -290,16 +325,18 @@ export default function DashboardPage() {
   const fetchAll = useCallback(async () => {
     setLoading(true)
     try {
-      const [rsvpRes, msgRes, vidRes, songRes] = await Promise.all([
+      const [rsvpRes, msgRes, vidRes, photoRes, songRes] = await Promise.all([
         fetch('/api/rsvp'),
         fetch('/api/messages'),
         fetch('/api/videos'),
+        fetch('/api/photos'),
         fetch('/api/playlist'),
       ])
 
       if (rsvpRes.ok) setRsvps(await rsvpRes.json())
       if (msgRes.ok) setMessages(await msgRes.json())
       if (vidRes.ok) setVideos(await vidRes.json())
+      if (photoRes.ok) setPhotos(await photoRes.json())
       if (songRes.ok) setSongs(await songRes.json())
     } catch {
       // ignore
@@ -330,6 +367,11 @@ export default function DashboardPage() {
   const deleteVideo = async (id: string) => {
     setVideos((prev) => prev.filter((v) => v.id !== id))
     await fetch(`/api/videos?id=${id}`, { method: 'DELETE' })
+  }
+
+  const deletePhoto = async (id: string) => {
+    setPhotos((prev) => prev.filter((photo) => photo.id !== id))
+    await fetch(`/api/photos?id=${id}`, { method: 'DELETE' })
   }
 
   const deleteSong = async (id: string) => {
@@ -367,7 +409,7 @@ export default function DashboardPage() {
           <div>
             <p className="text-white/75 text-xs font-semibold uppercase tracking-widest">Admin privé</p>
             <h1 className="text-4xl font-light text-white font-display mt-1 lg:text-5xl">Toutes les datas</h1>
-            <p className="text-white/70 text-sm mt-1">RSVP, vidéos, messages et playlist</p>
+            <p className="text-white/70 text-sm mt-1">RSVP, photos, vidéos, messages et playlist</p>
           </div>
         </div>
       </motion.div>
@@ -378,7 +420,7 @@ export default function DashboardPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1 }}
-          className="grid grid-cols-2 gap-3 mb-6 sm:grid-cols-3 lg:grid-cols-6"
+          className="grid grid-cols-2 gap-3 mb-6 sm:grid-cols-4 lg:grid-cols-7"
         >
           <StatCard
             value={stats.totalRsvps}
@@ -397,6 +439,12 @@ export default function DashboardPage() {
             label="Vidéos"
             color="linear-gradient(135deg, #EDE4F9 0%, #D9C6F0 100%)"
             Icon={Video}
+          />
+          <StatCard
+            value={stats.totalPhotos}
+            label="Photos"
+            color="linear-gradient(135deg, #E6EFEC 0%, #C6E4D9 100%)"
+            Icon={Images}
           />
           <StatCard
             value={stats.totalMessages}
@@ -426,7 +474,7 @@ export default function DashboardPage() {
         transition={{ delay: 0.2 }}
       >
         <Tabs defaultValue="rsvps">
-          <TabsList className="grid h-auto w-full grid-cols-4 gap-1">
+          <TabsList className="grid h-auto w-full grid-cols-5 gap-1">
             <TabsTrigger value="rsvps" className="min-h-11 px-2 text-xs sm:text-sm">
               <Users size={15} className="mr-1 shrink-0" />
               <span className="hidden sm:inline">Invités</span>
@@ -436,6 +484,11 @@ export default function DashboardPage() {
               <Video size={15} className="mr-1 shrink-0" />
               <span className="hidden sm:inline">Vidéos</span>
               <span className="sm:hidden">({stats.totalVideos})</span>
+            </TabsTrigger>
+            <TabsTrigger value="photos" className="min-h-11 px-2 text-xs sm:text-sm">
+              <Images size={15} className="mr-1 shrink-0" />
+              <span className="hidden sm:inline">Photos</span>
+              <span className="sm:hidden">({stats.totalPhotos})</span>
             </TabsTrigger>
             <TabsTrigger value="messages" className="min-h-11 px-2 text-xs sm:text-sm">
               <Mail size={15} className="mr-1 shrink-0" />
@@ -485,6 +538,27 @@ export default function DashboardPage() {
                 <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                   {videos.map((video) => (
                     <VideoCard key={video.id} video={video} onDelete={deleteVideo} />
+                  ))}
+                </div>
+              )}
+            </AnimatePresence>
+          </TabsContent>
+
+          {/* Photos */}
+          <TabsContent value="photos">
+            <AnimatePresence>
+              {loading ? (
+                <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
+                  {[...Array(4)].map((_, i) => (
+                    <div key={i} className="skeleton aspect-square rounded-3xl" />
+                  ))}
+                </div>
+              ) : photos.length === 0 ? (
+                <EmptyState Icon={Images} message="Aucune photo pour l'instant" />
+              ) : (
+                <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
+                  {photos.map((photo) => (
+                    <PhotoCard key={photo.id} photo={photo} onDelete={deletePhoto} />
                   ))}
                 </div>
               )}
