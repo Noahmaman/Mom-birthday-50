@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import {
+  Check,
   CheckCircle2,
   Download,
   ExternalLink,
@@ -13,6 +14,7 @@ import {
   Mail,
   MessageCircle,
   Music,
+  Pencil,
   Play,
   RefreshCw,
   Trash2,
@@ -20,6 +22,7 @@ import {
   Utensils,
   UserRound,
   Video,
+  X,
   type LucideIcon,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -203,7 +206,51 @@ function VideoCard({ video, onDelete }: { video: VideoType; onDelete: (id: strin
   )
 }
 
-function PhotoCard({ photo, onDelete }: { photo: GuestPhoto; onDelete: (id: string) => void }) {
+function PhotoCard({
+  photo,
+  onDelete,
+  onRename,
+}: {
+  photo: GuestPhoto
+  onDelete: (id: string) => void
+  onRename: (id: string, name: string) => Promise<void>
+}) {
+  const [isEditing, setIsEditing] = useState(false)
+  const [name, setName] = useState(photo.author_name)
+  const [isSaving, setIsSaving] = useState(false)
+  const [error, setError] = useState('')
+
+  const cancelEditing = () => {
+    setName(photo.author_name)
+    setError('')
+    setIsEditing(false)
+  }
+
+  const saveName = async () => {
+    const trimmedName = name.trim()
+    if (!trimmedName) {
+      setError('Le nom ne peut pas être vide')
+      return
+    }
+
+    if (trimmedName === photo.author_name) {
+      cancelEditing()
+      return
+    }
+
+    setIsSaving(true)
+    setError('')
+    try {
+      await onRename(photo.id, trimmedName)
+      setName(trimmedName)
+      setIsEditing(false)
+    } catch (renameError) {
+      setError(renameError instanceof Error ? renameError.message : 'Impossible de modifier le nom')
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
   return (
     <motion.figure
       initial={{ opacity: 0, y: 10 }}
@@ -215,14 +262,59 @@ function PhotoCard({ photo, onDelete }: { photo: GuestPhoto; onDelete: (id: stri
       <button onClick={() => window.open(photo.url, '_blank')} className="block w-full bg-[#EEE8E0]" aria-label={`Ouvrir la photo de ${photo.author_name}`}>
         <img src={photo.url} alt={`Photo envoyée par ${photo.author_name}`} loading="lazy" className="aspect-square h-full w-full object-cover" />
       </button>
-      <figcaption className="flex items-center gap-3 p-4">
+      <figcaption className="flex items-start gap-3 p-4">
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent-sage/20">
           <Images size={16} className="text-accent-sage" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold text-text-dark">{photo.author_name}</p>
-          <p className="text-xs text-text-muted">{formatDate(photo.created_at)}</p>
+          {isEditing ? (
+            <div className="space-y-1.5">
+              <label className="sr-only" htmlFor={`photo-name-${photo.id}`}>Nom de la photo</label>
+              <input
+                id={`photo-name-${photo.id}`}
+                autoFocus
+                value={name}
+                maxLength={100}
+                disabled={isSaving}
+                onChange={(event) => setName(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') void saveName()
+                  if (event.key === 'Escape') cancelEditing()
+                }}
+                className="h-9 w-full rounded-xl border border-accent-sage/40 bg-white px-3 text-sm font-semibold text-text-dark outline-none focus:border-accent-sage focus:ring-2 focus:ring-accent-sage/20"
+              />
+              {error && <p className="text-xs text-red-500">{error}</p>}
+            </div>
+          ) : (
+            <>
+              <p className="truncate text-sm font-semibold text-text-dark">{photo.author_name}</p>
+              <p className="text-xs text-text-muted">{formatDate(photo.created_at)}</p>
+            </>
+          )}
         </div>
+        {isEditing ? (
+          <>
+            <button
+              onClick={() => void saveName()}
+              disabled={isSaving}
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-green-50 disabled:opacity-50"
+              aria-label="Enregistrer le nom"
+            >
+              {isSaving ? <RefreshCw size={13} className="animate-spin text-green-600" /> : <Check size={13} className="text-green-600" />}
+            </button>
+            <button onClick={cancelEditing} disabled={isSaving} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-100 disabled:opacity-50" aria-label="Annuler la modification">
+              <X size={13} className="text-gray-500" />
+            </button>
+          </>
+        ) : (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-sage/15"
+            aria-label={`Modifier le nom de ${photo.author_name}`}
+          >
+            <Pencil size={13} className="text-accent-sage" />
+          </button>
+        )}
         <a href={photo.url} download className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50" aria-label="Télécharger la photo">
           <Download size={13} className="text-blue-500" />
         </a>
@@ -372,6 +464,21 @@ export default function DashboardPage() {
   const deletePhoto = async (id: string) => {
     setPhotos((prev) => prev.filter((photo) => photo.id !== id))
     await fetch(`/api/photos?id=${id}`, { method: 'DELETE' })
+  }
+
+  const renamePhoto = async (id: string, authorName: string) => {
+    const response = await fetch('/api/photos', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, author_name: authorName }),
+    })
+
+    const result = await response.json()
+    if (!response.ok) {
+      throw new Error(result.error || 'Impossible de modifier le nom')
+    }
+
+    setPhotos((prev) => prev.map((photo) => (photo.id === id ? result : photo)))
   }
 
   const deleteSong = async (id: string) => {
@@ -558,7 +665,7 @@ export default function DashboardPage() {
               ) : (
                 <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
                   {photos.map((photo) => (
-                    <PhotoCard key={photo.id} photo={photo} onDelete={deletePhoto} />
+                    <PhotoCard key={photo.id} photo={photo} onDelete={deletePhoto} onRename={renamePhoto} />
                   ))}
                 </div>
               )}
