@@ -45,10 +45,6 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: 'ID et nom requis' }, { status: 400 })
   }
 
-  if (authorName.length > 100) {
-    return NextResponse.json({ error: 'Le nom est trop long' }, { status: 400 })
-  }
-
   const { data: photo, error: lookupError } = await supabase
     .from('videos')
     .select('id, author_name, url, created_at')

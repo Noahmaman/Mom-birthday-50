@@ -274,7 +274,6 @@ function PhotoCard({
                 id={`photo-name-${photo.id}`}
                 autoFocus
                 value={name}
-                maxLength={100}
                 disabled={isSaving}
                 onChange={(event) => setName(event.target.value)}
                 onKeyDown={(event) => {
@@ -286,10 +285,17 @@ function PhotoCard({
               {error && <p className="text-xs text-red-500">{error}</p>}
             </div>
           ) : (
-            <>
-              <p className="truncate text-sm font-semibold text-text-dark">{photo.author_name}</p>
-              <p className="text-xs text-text-muted">{formatDate(photo.created_at)}</p>
-            </>
+            <button
+              type="button"
+              onDoubleClick={() => setIsEditing(true)}
+              className="block w-full cursor-text rounded-lg text-left outline-none focus-visible:ring-2 focus-visible:ring-accent-sage/40"
+              title="Double-clique pour renommer"
+              aria-label={`Double-cliquer pour renommer ${photo.author_name}`}
+            >
+              <span className="block truncate text-sm font-semibold text-text-dark">{photo.author_name}</span>
+              <span className="block text-[11px] font-medium text-accent-sage">Double-clique pour renommer</span>
+              <span className="block text-xs text-text-muted">{formatDate(photo.created_at)}</span>
+            </button>
           )}
         </div>
         {isEditing ? (
