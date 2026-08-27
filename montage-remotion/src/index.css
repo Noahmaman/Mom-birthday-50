@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: #071c2b;
+  font-family: "Avenir Next", Avenir, "Helvetica Neue", sans-serif;
+}
