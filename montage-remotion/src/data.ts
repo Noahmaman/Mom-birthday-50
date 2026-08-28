@@ -48,6 +48,7 @@ export const videoFiles = {
   rebecca: video("Rebecca"),
   perrine: video("Perrine"),
   yaya: video("Yaelle"),
+  albert: video("Albert"),
 } as const;
 
 export const dominiquePhotos = photoGroup("Dominique");

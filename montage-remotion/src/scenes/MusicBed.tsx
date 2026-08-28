@@ -7,6 +7,8 @@ type Props = {
   trimBefore?: number;
   volume?: number;
   fadeFrames?: number;
+  fadeInFrames?: number;
+  fadeOutFrames?: number;
 };
 
 export const MusicBed: React.FC<Props> = ({
@@ -15,6 +17,8 @@ export const MusicBed: React.FC<Props> = ({
   trimBefore = 0,
   volume = 0.28,
   fadeFrames = 14,
+  fadeInFrames = fadeFrames,
+  fadeOutFrames = fadeFrames,
 }) => (
   <Audio
     src={staticFile(file)}
@@ -23,7 +27,7 @@ export const MusicBed: React.FC<Props> = ({
     volume={(frame) =>
       interpolate(
         frame,
-        [0, fadeFrames, durationInFrames - fadeFrames, durationInFrames],
+        [0, fadeInFrames, durationInFrames - fadeOutFrames, durationInFrames],
         [0, volume, volume, 0],
         {extrapolateLeft: "clamp", extrapolateRight: "clamp"},
       )

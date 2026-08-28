@@ -10,6 +10,7 @@ type Props = {
   accent?: string;
   musicFile?: string;
   musicTrimBefore?: number;
+  venueText?: string;
 };
 
 const places: Record<string, {coordinates: readonly [number, number]; label: string; symbol: string}> = {
@@ -29,6 +30,7 @@ export const TravelScene: React.FC<Props> = ({
   accent = "#ef4770",
   musicFile,
   musicTrimBefore = 0,
+  venueText,
 }) => {
   const frame = useCurrentFrame();
   const origin = places[from] ?? places.France;
@@ -68,7 +70,7 @@ export const TravelScene: React.FC<Props> = ({
         {chapter}
       </div>
       <div style={{bottom: 54, left: 58, position: "absolute"}}>
-        <LocationLowerThird location={destination.label} venue={from + " → " + to} />
+        <LocationLowerThird location={destination.label} venue={venueText ?? from + " → " + to} />
       </div>
       <div
         style={{
