@@ -11,6 +11,8 @@ type Props = {
   trimBefore?: number;
   volume?: number;
   playbackRate?: number;
+  badgeText?: string;
+  badgeEmoji?: string;
 };
 
 const motifForPlace = (place?: string) => {
@@ -38,17 +40,19 @@ export const VideoMessage: React.FC<Props> = ({
   trimBefore = 0,
   volume = 1,
   playbackRate = VIDEO_PLAYBACK_RATE,
+  badgeText,
+  badgeEmoji = "✈️",
 }) => {
   const frame = useCurrentFrame();
   const {durationInFrames} = useVideoConfig();
-  const motif = motifForPlace(place);
+  const motif = badgeText ? {emoji: badgeEmoji, detail: badgeText} : motifForPlace(place);
 
   return (
     <AbsoluteFill style={{backgroundColor: "#f5c443", overflow: "hidden"}}>
       <CoverBackground soft />
       <div
         style={{
-          backgroundColor: "#fff7dc",
+          backgroundColor: "#eadfce",
           border: "5px solid #16181d",
           borderRadius: 24,
           boxShadow: "18px 20px 0 rgba(22,24,29,.38)",
@@ -67,7 +71,7 @@ export const VideoMessage: React.FC<Props> = ({
           volume={volume}
           objectFit="contain"
           style={{
-            backgroundColor: "#15181d",
+            backgroundColor: "#eadfce",
             height: "100%",
             inset: 0,
             opacity: interpolate(frame, [0, 8, durationInFrames - 10, durationInFrames], [0, 1, 1, 0], {

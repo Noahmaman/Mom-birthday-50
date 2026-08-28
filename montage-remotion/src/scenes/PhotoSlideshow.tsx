@@ -7,10 +7,13 @@ type Props = {
   photos: PlatformMedia[];
   framesPerPhoto: number;
   title: string;
-  subtitle: string;
+  subtitle?: string;
   musicFile?: string;
   musicTrimBefore?: number;
   musicVolume?: number;
+  showCaption?: boolean;
+  badgeText?: string;
+  imageObjectFit?: "contain" | "cover";
 };
 
 export const PhotoSlideshow: React.FC<Props> = ({
@@ -21,6 +24,9 @@ export const PhotoSlideshow: React.FC<Props> = ({
   musicFile,
   musicTrimBefore = 0,
   musicVolume = 0.34,
+  showCaption = true,
+  badgeText,
+  imageObjectFit = "contain",
 }) => {
   const frame = useCurrentFrame();
   const index = Math.min(Math.floor(frame / framesPerPhoto), Math.max(photos.length - 1, 0));
@@ -62,25 +68,32 @@ export const PhotoSlideshow: React.FC<Props> = ({
       ) : (
         <>
           <Img src={staticFile(current.file)} style={{filter: "blur(34px) brightness(.58) saturate(.65)", height: "100%", inset: 0, objectFit: "cover", opacity: 0.7, position: "absolute", scale: 1.14, width: "100%"}} />
-          <div style={{backgroundColor: "#fff7dc", border: "5px solid #16181d", borderRadius: 22, boxShadow: "16px 18px 0 rgba(22,24,29,.34)", inset: "5% 8%", overflow: "hidden", position: "absolute"}}>
+          <div style={{backgroundColor: "#eadfce", border: "5px solid #16181d", borderRadius: 22, boxShadow: "16px 18px 0 rgba(22,24,29,.34)", inset: "5% 8%", overflow: "hidden", position: "absolute"}}>
             <Img
               src={staticFile(current.file)}
               style={{
                 height: "100%",
-                objectFit: "contain",
+                objectFit: imageObjectFit,
                 opacity: interpolate(localFrame, [fadeStart, framesPerPhoto], [1, 0], {extrapolateLeft: "clamp", extrapolateRight: "clamp"}),
                 scale: interpolate(localFrame, [0, framesPerPhoto], [1.02, 1.075], {easing: Easing.bezier(0.2, 0.8, 0.2, 1), extrapolateLeft: "clamp", extrapolateRight: "clamp"}),
                 width: "100%",
               }}
             />
-            {next ? <Img src={staticFile(next.file)} style={{height: "100%", inset: 0, objectFit: "contain", opacity: interpolate(localFrame, [fadeStart, framesPerPhoto], [0, 1], {extrapolateLeft: "clamp", extrapolateRight: "clamp"}), position: "absolute", width: "100%"}} /> : null}
+            {next ? <Img src={staticFile(next.file)} style={{height: "100%", inset: 0, objectFit: imageObjectFit, opacity: interpolate(localFrame, [fadeStart, framesPerPhoto], [0, 1], {extrapolateLeft: "clamp", extrapolateRight: "clamp"}), position: "absolute", width: "100%"}} /> : null}
           </div>
         </>
       )}
-      <div style={{backgroundColor: "#ef4770", border: "4px solid #16181d", bottom: 42, boxShadow: "9px 10px 0 rgba(22,24,29,.32)", color: "#fff7dc", left: 62, padding: "15px 24px 17px", position: "absolute", rotate: "-1deg"}}>
-        <div style={{fontFamily: "Georgia, serif", fontSize: 49, fontWeight: 700}}>{title}</div>
-        <div style={{color: "#fff7dc", fontSize: 23, letterSpacing: 1.5, marginTop: 3}}>{subtitle}</div>
-      </div>
+      {showCaption ? (
+        <div style={{backgroundColor: "#ef4770", border: "4px solid #16181d", bottom: 42, boxShadow: "9px 10px 0 rgba(22,24,29,.32)", color: "#fff7dc", left: 62, padding: "15px 24px 17px", position: "absolute", rotate: "-1deg"}}>
+          <div style={{fontFamily: "Georgia, serif", fontSize: 49, fontWeight: 700}}>{title}</div>
+          {subtitle ? <div style={{color: "#fff7dc", fontSize: 23, letterSpacing: 1.5, marginTop: 3}}>{subtitle}</div> : null}
+        </div>
+      ) : null}
+      {badgeText ? (
+        <div style={{backgroundColor: "#fff7dc", border: "4px solid #16181d", borderRadius: 999, boxShadow: "9px 10px 0 rgba(22,24,29,.34)", color: "#16181d", fontSize: 27, fontWeight: 800, padding: "16px 24px", position: "absolute", right: 66, top: 54}}>
+          💛 {badgeText}
+        </div>
+      ) : null}
     </AbsoluteFill>
   );
 };

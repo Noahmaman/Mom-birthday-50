@@ -19,7 +19,7 @@ export const NameLowerThird: React.FC<{name: string; title?: string}> = ({name, 
         flexDirection: "column",
         fontFamily,
         height: 132,
-        width: 590,
+        width: 720,
         filter: "drop-shadow(0 9px 18px rgba(22,24,29,.28))",
       }}
     >
@@ -45,7 +45,7 @@ export const NameLowerThird: React.FC<{name: string; title?: string}> = ({name, 
           overflow: "hidden",
           padding: "0 24px",
           whiteSpace: "nowrap",
-          width: 470,
+          width: 680,
         }}
       >
         {name}

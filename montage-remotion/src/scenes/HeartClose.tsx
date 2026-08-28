@@ -7,7 +7,7 @@ export const HeartClose: React.FC = () => {
   const scale = interpolate(frame, [8, 62], [8, 0], {extrapolateLeft: "clamp", extrapolateRight: "clamp"});
   return (
     <AbsoluteFill style={{background: "black"}}>
-      <VideoMessage file={videoFiles.sergeTiAmo} name="Serge" place="Ti amo" />
+      <VideoMessage file={videoFiles.sergeTiAmo} name="Serge Ti amo" />
       <svg width="1920" height="1080" viewBox="0 0 1920 1080" style={{position: "absolute", inset: 0}}>
         <mask id="heart-window">
           <rect width="1920" height="1080" fill="white" />

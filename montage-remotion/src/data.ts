@@ -17,9 +17,9 @@ const video = (author: string) => {
   return match.file;
 };
 
-const photoGroup = (author: string) =>
+const photoGroup = (...authors: string[]) =>
   photos
-    .filter((item) => item.author_name === author)
+    .filter((item) => authors.some((author) => item.author_name.localeCompare(author, undefined, {sensitivity: "accent"}) === 0))
     .sort((a, b) => a.created_at.localeCompare(b.created_at));
 
 export const videoFiles = {
@@ -50,7 +50,8 @@ export const videoFiles = {
   yaya: video("Yaelle"),
 } as const;
 
-export const vacationPhotos = photoGroup("tous");
+export const dominiquePhotos = photoGroup("Dominique");
+export const vacationPhotos = photoGroup("vacances", "tous");
 export const sergePhotos = photoGroup("Serge");
-export const climaxPhotos = photoGroup("Climax");
-export const sergeSouthPhoto = photoGroup("photo serge a coller à sa vidéo")[0];
+export const climaxPhotos = photoGroup("Climax", "climax");
+export const sergeSouthPhoto = photoGroup("Yael Sud", "photo serge a coller à sa vidéo")[0];
