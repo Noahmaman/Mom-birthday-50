@@ -52,7 +52,7 @@ export const videoFiles = {
 } as const;
 
 export const dominiquePhotos = photoGroup("Dominique");
-export const vacationPhotos = photoGroup("vacances", "tous");
+export const vacationPhotos = photoGroup("vacances");
 export const sergePhotos = photoGroup("Serge");
 export const climaxPhotos = photoGroup("Climax", "climax");
 export const sergeSouthPhoto = photoGroup("Yael Sud", "photo serge a coller à sa vidéo")[0];

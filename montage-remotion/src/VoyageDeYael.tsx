@@ -12,14 +12,14 @@ import {TravelScene} from "./scenes/TravelScene";
 import {VideoMessage} from "./scenes/VideoMessage";
 import {atTempo} from "./timing";
 
-export const VOYAGE_DURATION = 18834;
+export const VOYAGE_DURATION = 17220;
 
-const TI_AMO_START = 18372;
-const TI_AMO_DURATION = 408;
+const TI_AMO_START = 16518;
+const TI_AMO_DURATION = 648;
 
 export const VoyageDeYael: React.FC = () => (
   <AbsoluteFill>
-  <TransitionSeries name="Voyage de Yael — montage final — modifs 3">
+  <TransitionSeries name="Voyage de Yael — montage final — modif 5">
     <TransitionSeries.Sequence durationInFrames={150} name="Introduction — passeport"><PassportScene /></TransitionSeries.Sequence>
     <TransitionSeries.Transition presentation={wipe({direction: "from-bottom"})} timing={linearTiming({durationInFrames: 12})} />
     <TransitionSeries.Sequence durationInFrames={atTempo(843)} name="Vidéo 1 — Maman’s"><VideoMessage file={videoFiles.nous} name="Maman’s" badgeText="Bon voyage" /></TransitionSeries.Sequence>
@@ -46,11 +46,11 @@ export const VoyageDeYael: React.FC = () => (
     <TransitionSeries.Transition presentation={wipe({direction: "from-right"})} timing={linearTiming({durationInFrames: 12})} />
     <TransitionSeries.Sequence durationInFrames={atTempo(627)} name="Vidéo 10 — Sylvia et David"><VideoMessage file={videoFiles.sylvia} name="Sylvia et David" /></TransitionSeries.Sequence>
     <TransitionSeries.Transition presentation={wipe({direction: "from-right"})} timing={linearTiming({durationInFrames: 12})} />
-    <TransitionSeries.Sequence durationInFrames={696} name="Photos — Vacaciones"><PhotoSlideshow photos={vacationPhotos} framesPerPhoto={24} title="Vacaciones" musicFile="audio/music/me-gustas-tu.mp3" musicTrimBefore={90} musicVolume={0.36} /></TransitionSeries.Sequence>
+    <TransitionSeries.Sequence durationInFrames={288} name="Photos — uniquement Vacances"><PhotoSlideshow photos={vacationPhotos} framesPerPhoto={24} title="Vacaciones" musicFile="audio/music/me-gustas-tu.mp3" musicTrimBefore={90} musicVolume={0.36} /></TransitionSeries.Sequence>
     <TransitionSeries.Transition presentation={wipe({direction: "from-right"})} timing={linearTiming({durationInFrames: 12})} />
     <TransitionSeries.Sequence durationInFrames={atTempo(371)} name="Vidéo 11 — Léa"><VideoMessage file={videoFiles.lea} name="Léa" /></TransitionSeries.Sequence>
     <TransitionSeries.Transition presentation={wipe({direction: "from-bottom-left"})} timing={linearTiming({durationInFrames: 12})} />
-    <TransitionSeries.Sequence durationInFrames={150} name="Transition 4 — Sud de la France / Le Sud"><TravelScene from="Europe" to="Sud de la France" chapter="Chapitre 4" accent="#f1aa61" /></TransitionSeries.Sequence>
+    <TransitionSeries.Sequence durationInFrames={150} name="Transition 4 — Montpellier avec cigales"><TravelScene from="Europe" to="Sud de la France" chapter="Chapitre 4" accent="#f1aa61" musicFile="audio/sfx/cicadas-south.mp3" musicVolume={0.3} /></TransitionSeries.Sequence>
     <TransitionSeries.Transition presentation={wipe({direction: "from-top-right"})} timing={linearTiming({durationInFrames: 12})} />
     <TransitionSeries.Sequence durationInFrames={atTempo(333)} name="Vidéo 13 — Perrine, avec cigales"><PerrineScene /></TransitionSeries.Sequence>
     <TransitionSeries.Transition presentation={wipe({direction: "from-right"})} timing={linearTiming({durationInFrames: 12})} />
@@ -60,7 +60,7 @@ export const VoyageDeYael: React.FC = () => (
     <TransitionSeries.Transition presentation={wipe({direction: "from-right"})} timing={linearTiming({durationInFrames: 12})} />
     <TransitionSeries.Sequence durationInFrames={atTempo(931)} name="Vidéo 14 — Rebecca"><VideoMessage file={videoFiles.rebecca} name="Rebecca" /></TransitionSeries.Sequence>
     <TransitionSeries.Transition presentation={wipe({direction: "from-bottom-left"})} timing={linearTiming({durationInFrames: 12})} />
-    <TransitionSeries.Sequence durationInFrames={150} name="Transition 5 — Paris / Paris s’éveille"><TravelScene from="Sud de la France" to="Paris" chapter="Chapitre 5" accent="#e4b2bb" venueText="Arrivée à Paris" /></TransitionSeries.Sequence>
+    <TransitionSeries.Sequence durationInFrames={150} name="Transition 5 — Paris s’éveille"><TravelScene from="Sud de la France" to="Paris" chapter="Chapitre 5" accent="#e4b2bb" venueText="Arrivée à Paris" musicFile="audio/music/paris-seveille.mp3" musicVolume={0.42} /></TransitionSeries.Sequence>
     <TransitionSeries.Transition presentation={wipe({direction: "from-top-right"})} timing={linearTiming({durationInFrames: 12})} />
     <TransitionSeries.Sequence durationInFrames={atTempo(418)} name="Vidéo 15 — Marc"><VideoMessage file={videoFiles.marc} name="Marc" /></TransitionSeries.Sequence>
     <TransitionSeries.Transition presentation={wipe({direction: "from-right"})} timing={linearTiming({durationInFrames: 12})} />
@@ -70,19 +70,11 @@ export const VoyageDeYael: React.FC = () => (
     <TransitionSeries.Transition presentation={wipe({direction: "from-right"})} timing={linearTiming({durationInFrames: 12})} />
     <TransitionSeries.Sequence durationInFrames={408} name="Photos — Yael et Serge"><PhotoSlideshow photos={sergePhotos} framesPerPhoto={24} title="Yael et Serge" badgeText="Avec amour" imageObjectFit="cover" musicFile="audio/music/la-vie-en-rose.mp3" musicTrimBefore={1260} musicVolume={0.34} /></TransitionSeries.Sequence>
     <TransitionSeries.Transition presentation={wipe({direction: "from-right"})} timing={linearTiming({durationInFrames: 12})} />
-    <TransitionSeries.Sequence durationInFrames={atTempo(750)} name="Johanna, Ralph et Elisabeth"><VideoMessage file={videoFiles.johanna} name="Johanna, Ralph et Elisabeth" /></TransitionSeries.Sequence>
+    <TransitionSeries.Sequence durationInFrames={372} name="Johanna, Ralph et Elisabeth — coupé à 8:56"><VideoMessage file={videoFiles.johanna} name="Johanna, Ralph et Elisabeth" /></TransitionSeries.Sequence>
     <TransitionSeries.Transition presentation={wipe({direction: "from-right"})} timing={linearTiming({durationInFrames: 12})} />
     <TransitionSeries.Sequence durationInFrames={atTempo(177)} name="Vidéo 18 — Fouad"><VideoMessage file={videoFiles.fouad} name="Fouad" place="Les mots d’amour" /></TransitionSeries.Sequence>
     <TransitionSeries.Transition presentation={wipe({direction: "from-right"})} timing={linearTiming({durationInFrames: 12})} />
-    <TransitionSeries.Sequence durationInFrames={atTempo(642)} name="Vidéo 19 — Sydney"><VideoMessage file={videoFiles.sydney} name="Sydney" /></TransitionSeries.Sequence>
-    <TransitionSeries.Transition presentation={wipe({direction: "from-right"})} timing={linearTiming({durationInFrames: 12})} />
     <TransitionSeries.Sequence durationInFrames={atTempo(406)} name="Albert — à partir de 2 secondes"><VideoMessage file={videoFiles.albert} name="Albert" trimBefore={60} /></TransitionSeries.Sequence>
-    <TransitionSeries.Transition presentation={wipe({direction: "from-right"})} timing={linearTiming({durationInFrames: 12})} />
-    <TransitionSeries.Sequence durationInFrames={atTempo(270)} name="Laura — reprise (1:34 à 1:43)"><VideoMessage file={videoFiles.laura} name="Laura" trimBefore={2820} /></TransitionSeries.Sequence>
-    <TransitionSeries.Transition presentation={wipe({direction: "from-right"})} timing={linearTiming({durationInFrames: 12})} />
-    <TransitionSeries.Sequence durationInFrames={atTempo(120)} name="Olivier — reprise (37s à 41s)"><VideoMessage file={videoFiles.olivier} name="Olivier" trimBefore={1110} /></TransitionSeries.Sequence>
-    <TransitionSeries.Transition presentation={wipe({direction: "from-right"})} timing={linearTiming({durationInFrames: 12})} />
-    <TransitionSeries.Sequence durationInFrames={atTempo(150)} name="Sandrinouche — reprise (31s à 36s)"><VideoMessage file={videoFiles.sandrinouche} name="Sandrinouche" trimBefore={930} /></TransitionSeries.Sequence>
     <TransitionSeries.Transition presentation={wipe({direction: "from-right"})} timing={linearTiming({durationInFrames: 12})} />
     <TransitionSeries.Sequence durationInFrames={100} name="Johanna, Ralph et Elisabeth — reprise finale"><VideoMessage file={videoFiles.johanna} name="Johanna, Ralph et Elisabeth" trimBefore={642} /></TransitionSeries.Sequence>
     <TransitionSeries.Transition presentation={wipe({direction: "from-right"})} timing={linearTiming({durationInFrames: 12})} />
@@ -94,9 +86,9 @@ export const VoyageDeYael: React.FC = () => (
     <TransitionSeries.Transition presentation={wipe({direction: "from-right"})} timing={linearTiming({durationInFrames: 12})} />
     <TransitionSeries.Sequence durationInFrames={atTempo(97)} name="Vidéo 23 — Noah"><VideoMessage file={videoFiles.noah} name="Noah" /></TransitionSeries.Sequence>
     <TransitionSeries.Transition presentation={wipe({direction: "from-right"})} timing={linearTiming({durationInFrames: 12})} />
-    <TransitionSeries.Sequence durationInFrames={150} name="Gad — toute fin, je t’aime fort fort fort"><VideoMessage file={videoFiles.gad} name="Gad" trimBefore={1260} /></TransitionSeries.Sequence>
+    <TransitionSeries.Sequence durationInFrames={75} name="Gad — uniquement je t’aime fort fort fort"><VideoMessage file={videoFiles.gad} name="Gad" trimBefore={1224} /></TransitionSeries.Sequence>
     <TransitionSeries.Transition presentation={wipe({direction: "from-bottom-left"})} timing={linearTiming({durationInFrames: 12})} />
-    <TransitionSeries.Sequence durationInFrames={240} name="Photos — Climax"><PhotoSlideshow photos={climaxPhotos} framesPerPhoto={24} title="Ti amo" subtitle="De tous ceux qui t’aiment" /></TransitionSeries.Sequence>
+    <TransitionSeries.Sequence durationInFrames={480} name="Photos — uniquement tous les Climax"><PhotoSlideshow photos={climaxPhotos} framesPerPhoto={24} title="Ti amo" subtitle="De tous ceux qui t’aiment" /></TransitionSeries.Sequence>
     <TransitionSeries.Transition presentation={wipe({direction: "from-bottom"})} timing={linearTiming({durationInFrames: 12})} />
     <TransitionSeries.Sequence durationInFrames={180} name="Les mots d’amour — fond beige"><LoveWordsScene /></TransitionSeries.Sequence>
     <TransitionSeries.Transition presentation={wipe({direction: "from-top-right"})} timing={linearTiming({durationInFrames: 12})} />

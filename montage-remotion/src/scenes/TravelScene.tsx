@@ -10,6 +10,7 @@ type Props = {
   accent?: string;
   musicFile?: string;
   musicTrimBefore?: number;
+  musicVolume?: number;
   venueText?: string;
 };
 
@@ -30,6 +31,7 @@ export const TravelScene: React.FC<Props> = ({
   accent = "#ef4770",
   musicFile,
   musicTrimBefore = 0,
+  musicVolume = 0.38,
   venueText,
 }) => {
   const frame = useCurrentFrame();
@@ -38,7 +40,7 @@ export const TravelScene: React.FC<Props> = ({
 
   return (
     <AbsoluteFill style={{backgroundColor: "#f5c443", overflow: "hidden"}}>
-      {musicFile ? <MusicBed file={musicFile} durationInFrames={150} trimBefore={musicTrimBefore} volume={0.38} fadeFrames={10} /> : null}
+      {musicFile ? <MusicBed file={musicFile} durationInFrames={150} trimBefore={musicTrimBefore} volume={musicVolume} fadeFrames={10} /> : null}
       <MapFlyover
         origin={origin.coordinates}
         destination={destination.coordinates}
