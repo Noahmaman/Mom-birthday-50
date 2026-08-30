@@ -1,10 +1,10 @@
 import {TransitionSeries, linearTiming} from "@remotion/transitions";
 import {wipe} from "@remotion/transitions/wipe";
-import {AbsoluteFill, Sequence} from "remotion";
+import {Audio} from "@remotion/media";
+import {AbsoluteFill, Sequence, interpolate, staticFile} from "remotion";
 import {climaxPhotos, sergePhotos, sergeSouthPhoto, vacationPhotos, videoFiles} from "./data";
 import {HeartClose} from "./scenes/HeartClose";
 import {LoveWordsScene} from "./scenes/LoveWordsScene";
-import {MusicBed} from "./scenes/MusicBed";
 import {PassportScene} from "./scenes/PassportScene";
 import {PerrineScene} from "./scenes/PerrineScene";
 import {PhotoSlideshow} from "./scenes/PhotoSlideshow";
@@ -14,8 +14,9 @@ import {atTempo} from "./timing";
 
 export const VOYAGE_DURATION = 17220;
 
-const TI_AMO_START = 16518;
-const TI_AMO_DURATION = 648;
+const TI_AMO_START = 15750;
+const TI_AMO_DURATION = 1470;
+const TI_AMO_CLIMAX_FRAME = 768;
 
 export const VoyageDeYael: React.FC = () => (
   <AbsoluteFill>
@@ -94,9 +95,18 @@ export const VoyageDeYael: React.FC = () => (
     <TransitionSeries.Transition presentation={wipe({direction: "from-top-right"})} timing={linearTiming({durationInFrames: 12})} />
     <TransitionSeries.Sequence durationInFrames={66} name="Vidéo 24 — Serge Ti amo"><HeartClose /></TransitionSeries.Sequence>
   </TransitionSeries>
-  <Sequence from={TI_AMO_START} durationInFrames={TI_AMO_DURATION} name="Musique — Ti Amo, climax et langues">
-    <MusicBed file="audio/music/ti-amo.mp3" durationInFrames={TI_AMO_DURATION} trimBefore={300} volume={1.1} fadeFrames={180} />
-    <MusicBed file="audio/music/ti-amo.mp3" durationInFrames={TI_AMO_DURATION} trimBefore={300} volume={0.7} fadeInFrames={30} fadeOutFrames={180} />
+  <Sequence from={TI_AMO_START} durationInFrames={TI_AMO_DURATION} name="Musique — Ti Amo de 8:45 jusqu’à la fin">
+    <Audio
+      src={staticFile("audio/music/ti-amo.mp3")}
+      trimBefore={300}
+      durationInFrames={TI_AMO_DURATION}
+      volume={(frame) => interpolate(
+        frame,
+        [0, 45, TI_AMO_CLIMAX_FRAME - 30, TI_AMO_CLIMAX_FRAME + 30, TI_AMO_DURATION - 120, TI_AMO_DURATION],
+        [0, 0.16, 0.16, 0.78, 0.3, 0],
+        {extrapolateLeft: "clamp", extrapolateRight: "clamp"},
+      )}
+    />
   </Sequence>
   </AbsoluteFill>
 );
