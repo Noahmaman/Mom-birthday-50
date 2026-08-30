@@ -89,7 +89,7 @@ export const VoyageDeYael: React.FC = () => (
     <TransitionSeries.Transition presentation={wipe({direction: "from-right"})} timing={linearTiming({durationInFrames: 12})} />
     <TransitionSeries.Sequence durationInFrames={75} name="Gad — uniquement je t’aime fort fort fort"><VideoMessage file={videoFiles.gad} name="Gad" trimBefore={1224} /></TransitionSeries.Sequence>
     <TransitionSeries.Transition presentation={wipe({direction: "from-bottom-left"})} timing={linearTiming({durationInFrames: 12})} />
-    <TransitionSeries.Sequence durationInFrames={480} name="Photos — uniquement tous les Climax"><PhotoSlideshow photos={climaxPhotos} framesPerPhoto={24} title="Ti amo" subtitle="De tous ceux qui t’aiment" /></TransitionSeries.Sequence>
+    <TransitionSeries.Sequence durationInFrames={480} name="Photos — uniquement tous les Climax"><PhotoSlideshow photos={climaxPhotos} framesPerPhoto={24} title="Joyeux anniversaire" subtitle="De tous ceux qui t’aiment" /></TransitionSeries.Sequence>
     <TransitionSeries.Transition presentation={wipe({direction: "from-bottom"})} timing={linearTiming({durationInFrames: 12})} />
     <TransitionSeries.Sequence durationInFrames={180} name="Les mots d’amour — fond beige"><LoveWordsScene /></TransitionSeries.Sequence>
     <TransitionSeries.Transition presentation={wipe({direction: "from-top-right"})} timing={linearTiming({durationInFrames: 12})} />
@@ -102,8 +102,8 @@ export const VoyageDeYael: React.FC = () => (
       durationInFrames={TI_AMO_DURATION}
       volume={(frame) => interpolate(
         frame,
-        [0, 45, TI_AMO_CLIMAX_FRAME - 30, TI_AMO_CLIMAX_FRAME + 30, TI_AMO_DURATION - 120, TI_AMO_DURATION],
-        [0, 0.16, 0.16, 0.78, 0.3, 0],
+        [0, 45, 62, 438, 468, TI_AMO_CLIMAX_FRAME - 30, TI_AMO_CLIMAX_FRAME + 30, TI_AMO_DURATION - 120, TI_AMO_DURATION],
+        [0, 0.12, 0.08, 0.08, 0.16, 0.16, 0.78, 0.3, 0],
         {extrapolateLeft: "clamp", extrapolateRight: "clamp"},
       )}
     />

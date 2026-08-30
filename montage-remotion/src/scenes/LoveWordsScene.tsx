@@ -1,6 +1,13 @@
 import {AbsoluteFill, Easing, interpolate, useCurrentFrame} from "remotion";
 
-const words = ["Je t’aime", "Ti amo", "I love you", "Te quiero", "אני אוהב אותך", "Eu te amo"];
+const words = [
+  "Joyeux anniversaire",
+  "Happy Birthday",
+  "Buon compleanno",
+  "Feliz cumpleaños",
+  "Feliz aniversário",
+  "יום הולדת שמח",
+];
 
 export const LoveWordsScene: React.FC = () => {
   const frame = useCurrentFrame();
@@ -14,7 +21,7 @@ export const LoveWordsScene: React.FC = () => {
             style={{
               position: "absolute",
               fontFamily: "Georgia, serif",
-              fontSize: 118,
+              fontSize: 108,
               fontStyle: "italic",
               opacity: interpolate(frame, [start, start + 8, start + 26, start + 34], [0, 1, 1, 0], {extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: Easing.bezier(0.16, 1, 0.3, 1)}),
               scale: interpolate(frame, [start, start + 34], [0.9, 1.05], {extrapolateLeft: "clamp", extrapolateRight: "clamp"}),
