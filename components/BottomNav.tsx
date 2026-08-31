@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { Home, CalendarCheck, Gift, Headphones, Images, PenLine, Clapperboard } from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -18,7 +19,7 @@ const navItems = [
 export default function BottomNav() {
   const pathname = usePathname()
 
-  if (pathname.startsWith('/admin')) return null
+  if (pathname.startsWith('/admin') || pathname.startsWith('/memories-50')) return null
 
   return (
     <div
@@ -33,7 +34,7 @@ export default function BottomNav() {
         className="flex items-center gap-1.5 px-2.5 py-1 rounded-full"
         style={{ background: 'rgba(255,252,248,0.7)', backdropFilter: 'blur(10px)' }}
       >
-        <img src="/arrow-icon.png" width={11} height={11} alt="" aria-hidden />
+        <Image src="/arrow-icon.png" width={11} height={11} alt="" aria-hidden />
         <span className="text-[9px] text-text-muted font-sans">Powered by</span>
         <span
           className="text-[9px] text-text-dark uppercase tracking-widest font-sans"
